@@ -4,10 +4,10 @@ import InnovatorSpotlight from '../components/InnovatorSpotlight';
 const innovators = [
   {
     id: 1,
-    name: "Dr. Sarah Namukasa",
-    title: "Lead AI Researcher at Makerere AI Lab",
+    name: "Evelyn Patra Asio, PhD Fellow",
+    title: "UX / UI Designer &Lead AI Researcher at Makerere AI Lab",
     image: "https://images.unsplash.com/photo-1573496527892-904f809f8f2a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    bio: "Dr. Namukasa leads groundbreaking research in AI applications for healthcare and agriculture in Uganda. Her work has revolutionized early disease detection in rural communities.",
+    bio: "Dr. Asio leads groundbreaking research in AI applications for healthcare and agriculture in Uganda. Her work has revolutionized early disease detection in rural communities.",
     achievements: [
       "Published 15+ research papers in top AI conferences",
       "Developed AI model for crop disease detection used by 10,000+ farmers",
