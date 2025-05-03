@@ -28,7 +28,7 @@ const innovators = [
     bio: "Bonita is a Health Tech innovator and Entrepreneur. She ensures AI solutions are inclusive and beneficial for African communities....",
     achievements: [
       "Founded mDex smartphone-based Sickle Cell Diagnostic tool registered, patent in Uganda & the US",
-      "Advisor to Ministry of ICT on AI policy",
+      "Advisor to Ministry of ICT on AI policy. Cherie Blair Mentee alumni & Grace Hopper Fellow 2014",
       "TEDx speaker on Responsible AI"
     ],
     links: {
