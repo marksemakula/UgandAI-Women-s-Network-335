@@ -15,7 +15,7 @@ const featuredStories = [
     title: "African Women in AI: Pivots, Perseverances and Pleasures",
     author: "Sarah Nalubega",
     date: "August 01, 2022",
-    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    image: "https://plus.unsplash.com/premium_photo-1681398587666-697b3e68b7bd?q=80&w=3022&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     excerpt: "Transforming tech education through innovative AI-powered learning platforms and community-driven initiatives."
   }
 ];
