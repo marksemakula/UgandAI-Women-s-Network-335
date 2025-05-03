@@ -7,7 +7,7 @@ const innovators = [
     name: "Evelyn Patra Asio, PhD Fellow",
     title: "UX / UI Designer &Lead AI Researcher at Makerere AI Lab",
     image: "/images/Dr.Asio_Evelyn_Patra.png",
-    bio: "Dr. Asio leads groundbreaking research in Tools & AI applications for healthcare and agriculture in Uganda. Her work has revolutionized early disease detection & Surveillance in rural communities.",
+    bio: "Dr. Asio is a Designer, Data Analyst, Researcher, Academic & Christian Author. an Assistant Lecturer in Makerere University - School of Computing & Informatics Technology, Academic Facilitator at both MakSchool of Public Health's Msc Health Informatics, and UNIPH in the FETP - Health Informatics track. Her work has revolutionized early disease detection & Surveillance in rural communities.",
     achievements: [
       "Published 15+ research papers in top Data Science journals & AI conferences",
       "Developed AI model for crop, animal & human disease detection projected to be used by 10,000+ farmers",
