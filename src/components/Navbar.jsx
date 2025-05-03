@@ -78,9 +78,6 @@ export default function Navbar() {
           </motion.div>
         )}
       </nav>
-      <div className="bg-black text-white text-center py-2 text-sm">
-        UWIAI / Inzozi / 1705
-      </div>
     </>
   );
 }
