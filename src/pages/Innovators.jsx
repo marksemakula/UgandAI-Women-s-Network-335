@@ -27,7 +27,7 @@ const innovators = [
     image: "/images/Bonita-Beatrice-Nanziri.jpg",
     bio: "Bonita is a Health Tech innovator and Entrepreneur. She ensures AI solutions are inclusive and beneficial for African communities.",
     achievements: [
-      "Founded mDex smartphone-based Sickle Cell Diagnostic tool which has a registered patent in Uganda and in the US",
+      "Founded mDex smartphone-based Sickle Cell Diagnostic tool registered, patent in Uganda & the US",
       "Advisor to Ministry of ICT on AI policy",
       "TEDx speaker on Responsible AI"
     ],
