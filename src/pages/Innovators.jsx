@@ -25,7 +25,7 @@ const innovators = [
     name: "Bonita Nanziri",
     title: "AI Ethics Researcher & Entrepreneur",
     image: "/images/Bonita-Beatrice-Nanziri.jpg",
-    bio: "Bonita is a Health Tech innovator and Entrepreneur. She ensures AI solutions are inclusive and beneficial for African communities.",
+    bio: "Bonita is a Health Tech innovator and Entrepreneur. She ensures AI solutions are inclusive and beneficial for African communities....",
     achievements: [
       "Founded mDex smartphone-based Sickle Cell Diagnostic tool registered, patent in Uganda & the US",
       "Advisor to Ministry of ICT on AI policy",
@@ -42,7 +42,7 @@ const innovators = [
     name: "Viola Nuwaha",
     title: "STEM Mentor & AI Education Advocate",
     image: "/images/vnuwaha.jpeg",
-    bio: "Viola has inspired many young ladies in Tech in Uganda and East Africa, through mentorship & making it accessible to young women through innovative training programs.",
+    bio: "Viola has inspired many young ladies in Tech in Uganda and East Africa, through mentorship & making it accessible to young women through innovative training programs....",
     achievements: [
       "Trained 1000+ women in AI fundamentals",
       "Developed localized AI curriculum in native languages",
