@@ -25,7 +25,7 @@ const innovators = [
     name: "Bonita Nanziri",
     title: "AI Ethics Researcher & Advocate",
     image: "/images/Bonita-Beatrice-Nanziri.jpg",
-    bio: "Bonita specializes in ethical AI development and ensuring AI solutions are inclusive and beneficial for African communities.",
+    bio: "Bonita is a Health Tech innovator and Entrepreneur. She ensures AI solutions are inclusive and beneficial for African communities.",
     achievements: [
       "Founded AI Ethics Initiative Uganda",
       "Advisor to Ministry of ICT on AI policy",
