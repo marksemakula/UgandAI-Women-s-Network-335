@@ -15,7 +15,7 @@ const featuredStories = [
     title: "African Women in AI: Pivots, Perseverances and Pleasures",
     author: "Sarah Nalubega",
     date: "August 01, 2022",
-    image: "/images/Bonita-Beatrice-Nanziri.jpg",
+    image: "/images/vnuwahagermany.jpeg",
     excerpt: "Moved by the absence of data and information on this topic, we decided that this was a project worth embarking on."
   }
 ];
