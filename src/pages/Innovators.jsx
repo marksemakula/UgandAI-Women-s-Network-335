@@ -33,7 +33,7 @@ const innovators = [
     ],
     links: {
       linkedin: "https://linkedin.com/in/example",
-      twitter: "https://twitter.com/example"
+      twitter: "https://ug.linkedin.com/in/bonita-beatrice-nanziri-13124668"
     },
     featured: false
   },
