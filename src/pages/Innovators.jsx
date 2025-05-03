@@ -6,7 +6,7 @@ const innovators = [
     id: 1,
     name: "Evelyn Patra Asio, PhD Fellow",
     title: "UX / UI Designer &Lead AI Researcher at Makerere AI Lab",
-    image: "https://images.unsplash.com/photo-1573496527892-904f809f8f2a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
+    image: "https://drive.google.com/file/d/1lsvMc9MvNoNcUPUZC6_G6n-r90ih04io/view?usp=sharing",
     bio: "Dr. Asio leads groundbreaking research in AI applications for healthcare and agriculture in Uganda. Her work has revolutionized early disease detection in rural communities.",
     achievements: [
       "Published 15+ research papers in top AI conferences",
@@ -14,15 +14,15 @@ const innovators = [
       "Winner of the 2023 African Innovation Award"
     ],
     links: {
-      linkedin: "https://linkedin.com/in/example",
-      twitter: "https://twitter.com/example",
-      website: "https://example.com"
+      linkedin: "https://www.linkedin.com/in/evelyn-asio-7973a423/",
+      twitter: "https://x.com/AfricanWIT/status/1226085265258708996",
+      website: "https://cocis.mak.ac.ug/faculty/information-systems/asio-evelyn-patra-k/"
     },
     featured: true
   },
   {
     id: 2,
-    name: "Grace Achieng",
+    name: "Sandra Nalubega",
     title: "AI Ethics Researcher & Advocate",
     image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     bio: "Grace specializes in ethical AI development and ensuring AI solutions are inclusive and beneficial for African communities.",
@@ -39,18 +39,18 @@ const innovators = [
   },
   {
     id: 3,
-    name: "Patricia Nalweyiso",
+    name: "Viola Nuwaha",
     title: "AI Education Pioneer",
-    image: "https://images.unsplash.com/photo-1573497019236-17f8177b81e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    bio: "Patricia has transformed AI education in Uganda, making it accessible to young women through innovative training programs.",
+    image: "https://drive.google.com/file/d/1p4IJ3i6_sFuvY_EYW_hiH1v8aItlihdp/view?usp=sharing",
+    bio: "Viola has inspired many young ladies in Tech in Uganda and East Africa, through mentorship & making it accessible to young women through innovative training programs.",
     achievements: [
       "Trained 1000+ women in AI fundamentals",
       "Developed localized AI curriculum in native languages",
       "Google AI Impact Challenge Winner"
     ],
     links: {
-      linkedin: "https://linkedin.com/in/example",
-      website: "https://example.com"
+      linkedin: "https://de.linkedin.com/in/viola-nuwaha",
+      website: "https://wageindicator.org/images/event-speakers/viola-nuwaha.jpeg/view"
     },
     featured: false
   }
