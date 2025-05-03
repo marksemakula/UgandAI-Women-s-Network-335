@@ -7,7 +7,7 @@ const innovators = [
     name: "Evelyn Patra Asio, PhD Fellow",
     title: "UX Designer, Data Analyst, Researcher, Academic & Christian Author",
     image: "/images/Dr.Asio_Evelyn_Patra.png",
-    bio: "She is an Assistant Lecturer at Makerere University - School of Computing & Informatics Technology, Academic Facilitator at both MakSchool of Public Health's Msc Health Informatics, and UNIPH in the FETP - Health Informatics track. Her work has revolutionized early disease detection & Public Health Surveillance.",
+    bio: "She is an Assistant Lecturer at Makerere University - School of Computing & Informatics Technology, Academic Facilitator at both MakSchool of Public Health's Msc Health Informatics, and UNIPH in the FETP - Health Informatics track. Her work has revolutionized early disease detection & Public Health Surveillance. Her research focuses on areas such as disaster management, mental health and well-being, digital health systems, safe built environments, and the welfare of aging communities, as well as government systems.",
     achievements: [
       "Published 15+ research papers in top Data Science journals & AI conferences",
       "STEM & DS mentor, part of a consulting consortium supporting families in transition through coaching, Tech Incubation & Implementation",
