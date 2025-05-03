@@ -10,8 +10,8 @@ const innovators = [
     bio: "She is an Assistant Lecturer in Makerere University - School of Computing & Informatics Technology, Academic Facilitator at both MakSchool of Public Health's Msc Health Informatics, and UNIPH in the FETP - Health Informatics track. Her work has revolutionized early disease detection & Surveillance in rural communities.",
     achievements: [
       "Published 15+ research papers in top Data Science journals & AI conferences",
-      "Developed AI model for crop, animal & human disease detection projected to be used by 10,000+ farmers",
-      "Winner of the 2023 African Tech in Academia Award"
+      "STEM & DS mentor, part of a consulting consortium supporting families in transition through coaching, Tech Incubation & Implementation",
+      "Founding Director of Burgeon Consults Co., LTD"
     ],
     links: {
       linkedin: "https://www.linkedin.com/in/evelyn-asio-7973a423/",
