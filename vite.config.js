@@ -1,10 +1,10 @@
-iimport { defineConfig } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/', // Changed from './' to '/'
+  base: '/', // Must be forward slash for Netlify
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
@@ -12,7 +12,17 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    emptyOutDir: true // Add this to clear old files
+    sourcemap: false, // Disable for production
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        entryFileNames: 'assets/[name]-[hash].js'
+      }
+    }
+  },
+  server: {
+    port: 5173,
+    strictPort: true
   }
 });
