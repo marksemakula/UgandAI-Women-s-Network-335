@@ -12,9 +12,9 @@ const featuredStories = [
     excerpt: "How a team of Ugandan women researchers are revolutionizing healthcare with AI, in collaboration with communities like inzozi.co and other women-led AI initiatives."
   },
   {
-    title: "AI Education Revolution",
-    author: "Donah Mwine",
-    date: "March 10, 2024",
+    title: "African Women in AI: Pivots, Perseverances and Pleasures",
+    author: "Sarah Nalubega",
+    date: "August 01, 2022",
     image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
     excerpt: "Transforming tech education through innovative AI-powered learning platforms and community-driven initiatives."
   }
@@ -30,12 +30,12 @@ const upcomingEvents = [
     description: "Hands-on workshop exploring AI applications in healthcare diagnostics and patient care."
   },
   {
-    title: "Women in Tech Conference",
-    date: "2024-04-20",
-    time: "09:00 - 18:00",
-    location: "Serena Hotel Kampala",
+    title: "Google Developer Group Meet",
+    date: "2024-08-15",
+    time: "17:00 - 19:00 EAT",
+    location: "Brunswick",
     type: "Conference",
-    description: "Annual conference bringing together women leaders in technology and AI."
+    description: "Community interation focused on Canva, Perplexity & Napkin AI for fashion, digital art and documentaries."
   }
 ];
 
