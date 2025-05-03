@@ -41,7 +41,7 @@ const innovators = [
     id: 3,
     name: "Viola Nuwaha",
     title: "AI Education Pioneer",
-    image: "/images/Viola_Nuwaha.png",
+    image: "/images/Dr.Asio_Evelyn_Patra.png",
     bio: "Viola has inspired many young ladies in Tech in Uganda and East Africa, through mentorship & making it accessible to young women through innovative training programs.",
     achievements: [
       "Trained 1000+ women in AI fundamentals",
