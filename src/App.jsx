@@ -27,7 +27,6 @@ export default function App() {
           <Route path="/membership" element={<Membership />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/innovators" element={<Innovators />} />
-          <Route path="/Mentor" element={<Mentor />} />
           <Route path="/talent-pool" element={<TalentPool />} />
           <Route path="/talent/:username" element={<TalentProfile />} />
           
