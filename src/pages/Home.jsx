@@ -35,7 +35,7 @@ const upcomingEvents = [
     time: "17:00 - 19:00 EAT",
     location: "Brunswick",
     type: "Conference",
-    description: "Community interation focused on Canva, Perplexity & Napkin AI for fashion, digital art and documentaries."
+    description: "Community event focused on showcasing & sharing experiences & opportunities using Canva, Perplexity & Napkin AI for fashion, digital art and documentaries."
   }
 ];
 
