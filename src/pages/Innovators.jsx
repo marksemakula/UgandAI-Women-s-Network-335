@@ -23,7 +23,7 @@ const innovators = [
   {
     id: 2,
     name: "Bonita Nanziri",
-    title: "AI Ethics Researcher & Advocate",
+    title: "AI Ethics Researcher & Entrepreneur",
     image: "/images/Bonita-Beatrice-Nanziri.jpg",
     bio: "Bonita is a Health Tech innovator and Entrepreneur. She ensures AI solutions are inclusive and beneficial for African communities.",
     achievements: [
@@ -40,7 +40,7 @@ const innovators = [
   {
     id: 3,
     name: "Viola Nuwaha",
-    title: "AI Education Pioneer",
+    title: "STEM Mentor & AI Education Advocate",
     image: "/images/vnuwaha.jpeg",
     bio: "Viola has inspired many young ladies in Tech in Uganda and East Africa, through mentorship & making it accessible to young women through innovative training programs.",
     achievements: [
