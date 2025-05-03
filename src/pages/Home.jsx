@@ -23,7 +23,7 @@ const featuredStories = [
 const upcomingEvents = [
   {
     title: "AI in Healthcare Workshop",
-    date: "2024-04-15",
+    date: "2025-04-15",
     time: "14:00 - 17:00",
     location: "Kampala Innovation Hub",
     type: "Workshop",
@@ -31,7 +31,7 @@ const upcomingEvents = [
   },
   {
     title: "Google Developer Group Meet",
-    date: "2024-08-15",
+    date: "2025-08-15",
     time: "17:00 - 19:00 EAT",
     location: "Brunswick",
     type: "Conference",
