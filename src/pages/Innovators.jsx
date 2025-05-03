@@ -22,10 +22,10 @@ const innovators = [
   },
   {
     id: 2,
-    name: "Sandra Nalubega",
+    name: "Bonita Nanziri",
     title: "AI Ethics Researcher & Advocate",
     image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    bio: "Grace specializes in ethical AI development and ensuring AI solutions are inclusive and beneficial for African communities.",
+    bio: "Bonita specializes in ethical AI development and ensuring AI solutions are inclusive and beneficial for African communities.",
     achievements: [
       "Founded AI Ethics Initiative Uganda",
       "Advisor to Ministry of ICT on AI policy",
