@@ -40,7 +40,7 @@ const innovators = [
   {
     id: 3,
     name: "Viola Nuwaha",
-    title: "STEM Mentor & AI Education Advocate",
+    title: "Data Scientist, STEM Mentor, (ICT4D) expert & AI Education Advocate",
     image: "/images/vnuwaha.jpeg",
     bio: "Viola has inspired many young ladies in Tech in Uganda and East Africa, through mentorship & making it accessible to young women through innovative training programs....",
     achievements: [
