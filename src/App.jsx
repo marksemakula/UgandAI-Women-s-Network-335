@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Membership from './pages/Membership';
-import Mentor from './pages/Mentor';
+import Mentor from './pages/Mentor'; // Import is correct
 import Projects from './pages/Projects';
 import Innovators from './pages/Innovators';
 import TalentPool from './pages/TalentPool';
@@ -28,6 +28,7 @@ export default function App() {
           <Route path="/membership" element={<Membership />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/innovators" element={<Innovators />} />
+          <Route path="/mentor" element={<Mentor />} /> {/* This line was missing */}
           <Route path="/talent-pool" element={<TalentPool />} />
           <Route path="/talent/:username" element={<TalentProfile />} />
           
