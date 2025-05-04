@@ -3,12 +3,13 @@ import InnovatorSpotlight from '../components/InnovatorSpotlight';
 import FeaturedInnovator from '../components/FeaturedInnovator';
 
 const innovators = [
+  // Featured Innovators (will appear in single rows)
   {
     id: 1,
     name: "Evelyn Patra Asio, PhD Fellow",
     title: "UX Designer, Data Analyst, Researcher, Academic & Christian Author",
     image: "/images/Dr.Asio_Evelyn_Patra.png",
-    bio: "She is an Assistant Lecturer at Makerere University - College of Computing & Informatics Technology, Academic Facilitator at both MakSchool of Public Health's Msc Health Informatics, and UNIPH in the FETP - Health Informatics track. Her work has revolutionized early disease detection & Public Health Surveillance. Her research focuses on areas such as disaster management, mental health and well-being, digital health systems, safe built environments, and the welfare of aging communities, as well as government systems.",
+    bio: "She is an Assistant Lecturer at Makerere University...",
     achievements: [
       "Published 15+ research papers in top Data Science journals & AI conferences",
       "STEM & DS mentor...",
@@ -21,6 +22,25 @@ const innovators = [
     },
     isFeatured: true
   },
+  {
+    id: 4,
+    name: "Dr. Amina Zawedde, PhD",
+    title: "Permanent Secretary, Ministry of ICT & National Guidance",
+    image: "/images/Dr.Amina-Zawedde.jpg",
+    bio: "Dr. Amina Zawedde is a seasoned ICT professional...",
+    achievements: [
+      "Spearheaded Uganda's National ICT Policy implementation",
+      "Champion for increasing women participation...",
+      "Recipient of multiple awards..."
+    ],
+    links: {
+      linkedin: "https://ug.linkedin.com/in/aminahzawedde",
+      twitter: "https://twitter.com/azawedde"
+    },
+    isFeatured: true
+  },
+
+  // Regular Innovators (will appear in pairs)
   {
     id: 2,
     name: "Bonita Nanziri",
@@ -43,7 +63,7 @@ const innovators = [
     name: "Dr. Dorothy Okello, PhD",
     title: "Dean, School of Engineering, Makerere University",
     image: "/images/Makerere-CEDAT-Eng-Dr-Dorothy-Okello.jpg",
-    bio: "Professor Dorothy Okello is a telecommunications engineer and academic who has dedicated her career to advancing ICT for development and promoting women in engineering fields across Africa.",
+    bio: "Professor Dorothy Okello is a telecommunications engineer...",
     achievements: [
       "First female Dean of Engineering at Makerere University",
       "Founder of Women of Uganda Network (WOUGNET)",
@@ -54,23 +74,6 @@ const innovators = [
       website: "https://engineering.mak.ac.ug/"
     },
     isFeatured: false
-  },
-  {
-    id: 4,
-    name: "Dr. Amina Zawedde, PhD",
-    title: "Permanent Secretary, Ministry of ICT & National Guidance",
-    image: "/images/Dr.Amina-Zawedde.jpg",
-    bio: "Dr. Amina Zawedde is a seasoned ICT professional with extensive experience in both public and private sectors. She has been instrumental in driving Uganda's digital transformation agenda and promoting women in tech initiatives.",
-    achievements: [
-      "Spearheaded Uganda's National ICT Policy implementation",
-      "Champion for increasing women participation...",
-      "Recipient of multiple awards..."
-    ],
-    links: {
-      linkedin: "https://ug.linkedin.com/in/aminahzawedde",
-      twitter: "https://twitter.com/azawedde"
-    },
-    isFeatured: true
   },
   {
     id: 5,
@@ -84,9 +87,9 @@ const innovators = [
       "Recognized by Forbes Africa..."
     ],
     links: {
-      github: "https://https://github.com/AnneNamuli", // Added GitHub link
-      linkedin: "https://www.linkedin.com/in/annenamuli", // Updated LinkedIn link
-      twitter: "https://twitter.com/annenamuli" // Updated Twitter link
+      github: "https://github.com/AnneNamuli",  // Fixed duplicate https
+      linkedin: "https://www.linkedin.com/in/annenamuli",
+      twitter: "https://twitter.com/annenamuli"
     },
     isFeatured: false
   },
@@ -102,21 +105,74 @@ const innovators = [
       "Google AI Impact Challenge Winner"
     ],
     links: {
-      github: "https://https://github.com/ViolaNuwaha", // Added GitHub link
+      github: "https://github.com/ViolaNuwaha",  // Fixed duplicate https
       linkedin: "https://de.linkedin.com/in/viola-nuwaha",
       website: "https://wageindicator.org/images/event-speakers/viola-nuwaha.jpeg/view"
     },
     isFeatured: false
   },
+  {
+    id: 7,
+    name: "Joane Kirunga",
+    title: "Risk Data Scientist",
+    image: "/images/Joane_Kirunga.jpeg",
+    bio: "Joane specializes in big data frameworks. She is currently in the banking sector.",
+    achievements: [
+      "Lead author of Uganda's National AI Ethics Guidelines",
+      "UN Digital Policy Fellow 2023",
+      "Founder of Digital Rights East Africa initiative"
+    ],
+    links: {
+      linkedin: "https://ug.linkedin.com/in/joan-kirunga",
+      twitter: "https://twitter.com/joanekirunga"
+    },
+    isFeatured: false
+  },
+  {
+    id: 8,
+    name: "Martha Mulerwa, PhD Fellow",
+    title: "Biomedical Engineer & eHealth Solutions Architect",
+    image: "/images/Martha-Mulerwa1.png",
+    bio: "Martha develops localized health solutions...",
+    achievements: [
+      "Supporting the development of the Kinyarwanda NLP toolkit",
+      "EU-African e-Infrastructure to develop innovative and collaborative health solutions",
+      "Research Work covering human prosthetic limnbs"
+    ],
+    links: {
+      github: "https://github.com/marthamulerwa",
+      linkedin: "https://www.linkedin.com/in/marthamulerwa"
+    },
+    isFeatured: false
+  },
+  {
+    id: 9,
+    name: "Charity Delmus Alupo, PhD Fellow",
+    title: "Machine Learning application in Energy - ML Labs",
+    image: "/images/Charity-Delmus-Alupo.png",
+    bio: "This position recognizes future women innovators...",
+    achievements: [
+      "Opportunity for emerging talent",
+      "Mentorship program available",
+      "Research grants accessible"
+    ],
+    links: {
+      github: "https://github.com",
+      linkedin: "https://ie.linkedin.com/in/charity-delmus-115198104"
+    },
+    isFeatured: false
+  }
 ];
 
 export default function Innovators() {
   // Manually group the innovators in the desired order
   const innovatorGroups = [
-    [innovators[0]], // First featured
-    [innovators[1], innovators[2]], // Next two regular
-    [innovators[3]], // Second featured
-    [innovators[4], innovators[5]]  // Last two regular
+    [innovators[0]],    // Evelyn (Featured - row 1)
+    [innovators[2], innovators[3]],  // Bonita & Dorothy (row 2)
+    [innovators[1]],    // Amina (Featured - row 3)
+    [innovators[4], innovators[5]],  // Anne & Viola (row 4)
+    [innovators[6]],    // Joane (row 5 - single to maintain pattern)
+    [innovators[7], innovators[8]]   // Martha & Position Available (row 6)
   ];
 
   return (
@@ -139,10 +195,8 @@ export default function Innovators() {
         {innovatorGroups.map((group, groupIndex) => (
           <div key={groupIndex} className="mb-12">
             {group.length === 1 ? (
-              // Featured innovator (single column with special layout)
               <FeaturedInnovator innovator={group[0]} />
             ) : (
-              // Regular innovators (2-column layout)
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
                 {group.map((innovator) => (
                   <InnovatorSpotlight 
