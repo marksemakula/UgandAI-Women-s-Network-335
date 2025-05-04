@@ -9,7 +9,7 @@ const innovators = [
     name: "Evelyn Patra Asio, PhD Fellow",
     title: "UX Designer, Data Analyst, Researcher, Academic & Christian Author",
     image: "/images/Dr.Asio_Evelyn_Patra.png",
-    bio: "She is an Assistant Lecturer at Makerere University...",
+    bio: "She is an Assistant Lecturer at Makerere University - College of Computing & Informatics Technology, Academic Facilitator at both MakSchool of Public Health's Msc Health Informatics, and UNIPH in the FETP - Health Informatics track. Her work has revolutionized early disease detection & Public Health Surveillance. Her research focuses on areas such as disaster management, mental health and well-being, digital health systems, safe built environments, and the welfare of aging communities, as well as government systems.",
     achievements: [
       "Published 15+ research papers in top Data Science journals & AI conferences",
       "STEM & DS mentor...",
@@ -27,7 +27,7 @@ const innovators = [
     name: "Dr. Amina Zawedde, PhD",
     title: "Permanent Secretary, Ministry of ICT & National Guidance",
     image: "/images/Dr.Amina-Zawedde.jpg",
-    bio: "Dr. Amina Zawedde is a seasoned ICT professional...",
+    bio: "Dr. Amina Zawedde is a seasoned ICT professional with extensive experience in both public and private sectors. She has been instrumental in driving Uganda's digital transformation agenda and promoting women in tech initiatives.",
     achievements: [
       "Spearheaded Uganda's National ICT Policy implementation",
       "Champion for increasing women participation...",
@@ -63,7 +63,7 @@ const innovators = [
     name: "Dr. Dorothy Okello, PhD",
     title: "Dean, School of Engineering, Makerere University",
     image: "/images/Makerere-CEDAT-Eng-Dr-Dorothy-Okello.jpg",
-    bio: "Professor Dorothy Okello is a telecommunications engineer...",
+    bio: "Professor Dorothy Okello is a telecommunications engineer and academic who has dedicated her career to advancing ICT for development and promoting women in engineering fields across Africa.",
     achievements: [
       "First female Dean of Engineering at Makerere University",
       "Founder of Women of Uganda Network (WOUGNET)",
@@ -184,11 +184,11 @@ export default function Innovators() {
           className="text-center mb-12"
         >
           <h1 className="text-4xl font-bold text-primary mb-4">
-            AI Innovator Spotlights
+            Spotlight
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Celebrating the brilliant women leading AI innovation and research in Uganda.
-            These trailblazers are shaping the future of artificial intelligence.
+            These trailblazers are shaping the future of artificial intelligence, Machine Learning & Data Science.
           </p>
         </motion.div>
 
