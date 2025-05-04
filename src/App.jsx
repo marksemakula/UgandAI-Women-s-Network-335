@@ -1,7 +1,8 @@
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Membership from './pages/Membership';
+import Mentor from './pages/Mentor';
 import Projects from './pages/Projects';
 import Innovators from './pages/Innovators';
 import TalentPool from './pages/TalentPool';

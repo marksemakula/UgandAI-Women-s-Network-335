@@ -15,6 +15,7 @@ The UWIAI website consists of the following main sections:
 - **Innovators**: Profiles of leading women in AI
 - **Talent Pool**: Directory of members with public profiles
 - **Membership**: Registration form for new members
+- **Mentor**: Platform connecting mentors and mentees in AI fields
 
 ## Content Management System
 
@@ -23,6 +24,7 @@ The CMS allows authorized administrators to:
 - Approve talent pool submissions
 - Create and edit events
 - Update featured stories
+- Manage mentorship pairings
 - Manage admin accounts
 
 ### Accessing the CMS
@@ -64,6 +66,19 @@ The CMS allows authorized administrators to:
    - Featured image
 3. Toggle "Featured" status for highlighted profiles
 
+### Mentorship Program
+1. Go to `/admin/mentorship`
+2. View current mentorship pairings
+3. Manage program settings:
+   - Matching criteria (expertise, availability)
+   - Program duration options
+   - Feedback collection forms
+4. Edit program content:
+   - Program description
+   - Benefits section
+   - Success stories
+5. Set featured mentor profiles
+
 ## Admin Accounts
 
 ### Creating New Admins
@@ -81,11 +96,19 @@ The CMS allows authorized administrators to:
 - Styled with Tailwind CSS
 - Animations with Framer Motion
 - Icons from React Icons
+- Mentorship components:
+  - Matching algorithm
+  - Session scheduling
+  - Progress tracking
 
 ### Backend Requirements
 - Node.js server
 - MongoDB database
 - Authentication service
+- Mentorship-specific collections:
+  - mentor_profiles
+  - mentorship_matches
+  - session_records
 
 ### Deployment
 - Build command: `npm run build`

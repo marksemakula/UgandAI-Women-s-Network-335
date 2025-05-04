@@ -11,6 +11,7 @@ export default function Navbar() {
     { to: "/", text: "Home" },
     { to: "/projects", text: "Projects" },
     { to: "/innovators", text: "Innovators" },
+    { to: "/mentor", text: "Mentor" },
     { to: "/talent-pool", text: "Talent Pool" },
     { to: "/membership", text: "Join Us", highlight: true }
   ];
