@@ -1,4 +1,4 @@
-import { FaLinkedin, FaTwitter, FaGlobe } from 'react-icons/fa';
+import { FaLinkedin, FaTwitter, FaGlobe, FaGithub } from 'react-icons/fa';
 
 export default function FeaturedInnovator({ innovator }) {
   return (
@@ -42,6 +42,11 @@ export default function FeaturedInnovator({ innovator }) {
             {innovator.links.website && (
               <a href={innovator.links.website} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-800 text-2xl">
                 <FaGlobe />
+              </a>
+            )}
+            {innovator.links.github && (
+              <a href={innovator.links.github} target="_blank" rel="noopener noreferrer" className="text-gray-800 hover:text-gray-600 text-2xl">
+                <FaGithub />
               </a>
             )}
           </div>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FiLinkedin, FiTwitter, FiAward, FiExternalLink } from 'react-icons/fi';
+import { FiLinkedin, FiTwitter, FiAward, FiExternalLink, FiGithub } from 'react-icons/fi';
 
 export default function InnovatorSpotlight({ innovator }) {
   const { name, title, image, bio, achievements, links, featured } = innovator;
@@ -65,6 +65,16 @@ export default function InnovatorSpotlight({ innovator }) {
               className="text-gray-600 hover:text-accent transition"
             >
               <FiTwitter size={20} />
+            </a>
+          )}
+          {links.github && (
+            <a 
+              href={links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-accent transition"
+            >
+              <FiGithub size={20} />
             </a>
           )}
           {links.website && (

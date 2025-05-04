@@ -84,8 +84,9 @@ const innovators = [
       "Recognized by Forbes Africa..."
     ],
     links: {
-      linkedin: "https://www.linkedin.com/in/judithowigar/",
-      twitter: "https://twitter.com/owigar"
+      github: "https://https://github.com/AnneNamuli", // Added GitHub link
+      linkedin: "https://www.linkedin.com/in/annenamuli", // Updated LinkedIn link
+      twitter: "https://twitter.com/annenamuli" // Updated Twitter link
     },
     isFeatured: false
   },
@@ -101,6 +102,7 @@ const innovators = [
       "Google AI Impact Challenge Winner"
     ],
     links: {
+      github: "https://https://github.com/ViolaNuwaha", // Added GitHub link
       linkedin: "https://de.linkedin.com/in/viola-nuwaha",
       website: "https://wageindicator.org/images/event-speakers/viola-nuwaha.jpeg/view"
     },
