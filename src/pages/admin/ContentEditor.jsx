@@ -38,7 +38,6 @@ export default function ContentEditor() {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Validate Google Form link
     if (!currentEvent.googleFormLink.includes('docs.google.com/forms')) {
       toast.error('Please enter a valid Google Form link');
       return;
@@ -54,7 +53,6 @@ export default function ContentEditor() {
       updatedEvents = [...events, { 
         ...currentEvent, 
         id: Date.now().toString(),
-        // Automatically generate responses link if not provided
         formResponsesLink: currentEvent.formResponsesLink || 
           currentEvent.googleFormLink.replace('/viewform', '/viewanalytics')
       }];
@@ -108,7 +106,6 @@ export default function ContentEditor() {
       <h1 className="text-2xl font-bold text-primary mb-6">Events Management</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Event Form */}
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-4">
             {isEditing ? 'Edit Event' : 'Add New Event'}
@@ -175,6 +172,8 @@ export default function ContentEditor() {
                 <option value="Training">Training</option>
                 <option value="Workshop">Workshop</option>
                 <option value="Conference">Conference</option>
+                <option value="Networking">Networking</option>
+                <option value="Ceremony">Ceremony</option>
               </select>
             </div>
 
@@ -277,7 +276,6 @@ export default function ContentEditor() {
           </div>
         </form>
 
-        {/* Events List */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-4">Current Events</h2>
           {events.length === 0 ? (

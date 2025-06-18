@@ -8,7 +8,8 @@ const eventTypes = [
   { value: 'Training', label: 'Trainings' },
   { value: 'Workshop', label: 'Workshops' },
   { value: 'Conference', label: 'Conferences' },
-  { value: 'Networking', label: 'Networking' }
+  { value: 'Networking', label: 'Networking' },
+  { value: 'Ceremony', label: 'Ceremonies' }
 ];
 
 export default function EventsCalendar() {
@@ -17,17 +18,14 @@ export default function EventsCalendar() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load events from localStorage (or API in production)
     const loadEvents = () => {
       try {
         const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-        // Filter out past events
         const upcomingEvents = savedEvents.filter(event => {
           if (!event.date) return true;
           const eventDate = new Date(event.date);
           return eventDate >= new Date();
         });
-        // Sort by date (soonest first)
         upcomingEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
         setEvents(upcomingEvents);
       } catch (error) {
@@ -38,7 +36,6 @@ export default function EventsCalendar() {
     };
 
     loadEvents();
-    // Refresh every minute in case of updates
     const interval = setInterval(loadEvents, 60000);
     return () => clearInterval(interval);
   }, []);
@@ -53,7 +50,7 @@ export default function EventsCalendar() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-primary mb-4">Upcoming Events</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Join us for hands-on AI training sessions, workshops, and networking events
+            Join us for hands-on AI training sessions, workshops, networking events, and ceremonies
             designed specifically for women in technology.
           </p>
         </div>
