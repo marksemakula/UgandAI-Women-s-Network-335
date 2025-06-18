@@ -19,7 +19,6 @@ export default function Login() {
       password: '@Student1705',
       name: 'Viola Admin'
     },
-    // Add additional admin accounts here if needed
     {
       email: 'ugandanwomeninartificialintell@gmail.com',
       password: '@Admin1705',
@@ -33,7 +32,6 @@ export default function Login() {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (error) setError('');
   };
 
@@ -43,10 +41,8 @@ export default function Login() {
     setError('');
     
     try {
-      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Validate credentials against approved accounts
       const validAccount = ADMIN_ACCOUNTS.find(
         account => 
           account.email === credentials.email && 
@@ -54,7 +50,6 @@ export default function Login() {
       );
 
       if (validAccount) {
-        // Store auth token with admin info and redirect
         localStorage.setItem('uwiai_admin_token', JSON.stringify({
           email: validAccount.email,
           name: validAccount.name,
@@ -113,7 +108,7 @@ export default function Login() {
                 required
                 autoComplete="username"
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm"
-                placeholder="viola@uwiai.org"
+                placeholder="Enter your admin email"
               />
             </div>
           </div>
@@ -135,7 +130,7 @@ export default function Login() {
                 required
                 autoComplete="current-password"
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm"
-                placeholder="@Student1705"
+                placeholder="Enter your password"
               />
             </div>
           </div>
