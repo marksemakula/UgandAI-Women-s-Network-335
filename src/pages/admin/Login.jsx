@@ -12,12 +12,29 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Approved admin accounts
+  const ADMIN_ACCOUNTS = [
+    {
+      email: 'viola@uwiai.org',
+      password: '@Student1705',
+      name: 'Viola Admin'
+    },
+    // Add additional admin accounts here if needed
+    {
+      email: 'ugandanwomeninartificialintell@gmail.com',
+      password: '@Admin1705',
+      name: 'UWIAI Admin'
+    }
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials(prev => ({
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (error) setError('');
   };
 
   const handleSubmit = async (e) => {
@@ -26,19 +43,30 @@ export default function Login() {
     setError('');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      // In a real app, you would verify credentials here
-      if (credentials.email && credentials.password) {
-        // Store auth token and redirect
-        localStorage.setItem('uwiai_admin_token', 'sample_token');
+      // Validate credentials against approved accounts
+      const validAccount = ADMIN_ACCOUNTS.find(
+        account => 
+          account.email === credentials.email && 
+          account.password === credentials.password
+      );
+
+      if (validAccount) {
+        // Store auth token with admin info and redirect
+        localStorage.setItem('uwiai_admin_token', JSON.stringify({
+          email: validAccount.email,
+          name: validAccount.name,
+          timestamp: new Date().getTime()
+        }));
         navigate('/admin');
       } else {
-        setError('Please enter valid credentials');
+        setError('Invalid email or password. Please try again.');
       }
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError('Login failed. Please check your connection and try again.');
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -49,6 +77,7 @@ export default function Login() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
         className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
       >
         <div className="text-center mb-8">
@@ -57,14 +86,18 @@ export default function Login() {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-center text-sm"
+          >
             {error}
-          </div>
+          </motion.div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
             </label>
             <div className="relative">
@@ -72,18 +105,21 @@ export default function Login() {
                 <FiMail className="h-5 w-5 text-gray-400" />
               </div>
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={credentials.email}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-accent focus:border-accent sm:text-sm"
+                autoComplete="username"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm"
+                placeholder="viola@uwiai.org"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
             <div className="relative">
@@ -91,12 +127,15 @@ export default function Login() {
                 <FiLock className="h-5 w-5 text-gray-400" />
               </div>
               <input
+                id="password"
                 type="password"
                 name="password"
                 value={credentials.password}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-accent focus:border-accent sm:text-sm"
+                autoComplete="current-password"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm"
+                placeholder="@Student1705"
               />
             </div>
           </div>
@@ -106,13 +145,26 @@ export default function Login() {
               type="submit"
               disabled={isLoading}
               className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white
-                ${isLoading ? 'bg-gray-400' : 'bg-accent hover:bg-accent-light'} 
-                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition`}
+                ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-light'} 
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition duration-150`}
             >
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Authenticating...
+                </span>
+              ) : 'Login'}
             </button>
           </div>
         </form>
+
+        <div className="mt-6 text-center text-xs text-gray-500">
+          <p>For authorized UWIAI administrators only.</p>
+          <p className="mt-1">Contact tech support if you need access.</p>
+        </div>
       </motion.div>
     </div>
   );
