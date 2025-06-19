@@ -13,6 +13,7 @@ import Dashboard from './pages/admin/Dashboard';
 import ContentEditor from './pages/admin/ContentEditor';
 import TalentPoolManager from './pages/admin/TalentPoolManager';
 import Login from './pages/admin/Login';
+import DashboardHome from './pages/admin/DashboardHome';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -27,6 +28,7 @@ export default function App() {
         <Navbar />
         <main className="flex-grow">
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/membership" element={<Membership />} />
             <Route path="/projects" element={<Projects />} />
@@ -43,21 +45,35 @@ export default function App() {
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
-              } 
-            />
+              }
+            >
+              <Route index element={<DashboardHome />} />
+              
+              {/* Projects Management */}
+              <Route path="projects" element={<ContentEditor type="projects" />} />
+              <Route path="projects/new" element={<ContentEditor type="projects" mode="create" />} />
+              <Route path="projects/:id/edit" element={<ContentEditor type="projects" mode="edit" />} />
+              
+              {/* Events Management */}
+              <Route path="events" element={<ContentEditor type="events" />} />
+              <Route path="events/new" element={<ContentEditor type="events" mode="create" />} />
+              <Route path="events/:id/edit" element={<ContentEditor type="events" mode="edit" />} />
+              
+              {/* Content Management */}
+              <Route path="content" element={<ContentEditor type="content" />} />
+              <Route path="content/:section" element={<ContentEditor type="content" />} />
+              <Route path="content/new" element={<ContentEditor type="content" mode="create" />} />
+              
+              {/* Talent Pool Management */}
+              <Route path="talent-pool" element={<TalentPoolManager />} />
+            </Route>
+            
+            {/* Catch-all for admin routes */}
             <Route 
-              path="/admin/:section" 
+              path="/admin/*" 
               element={
                 <ProtectedRoute>
-                  <ContentEditor />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/talent-pool" 
-              element={
-                <ProtectedRoute>
-                  <TalentPoolManager />
+                  <Navigate to="/admin" replace />
                 </ProtectedRoute>
               } 
             />

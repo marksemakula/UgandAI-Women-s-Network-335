@@ -1,8 +1,9 @@
+// ProjectCard.jsx
 import { motion } from 'framer-motion';
-import { FiGithub, FiExternalLink, FiUser } from 'react-icons/fi';
+import { FiGithub, FiExternalLink, FiUser, FiFile } from 'react-icons/fi';
 
 export default function ProjectCard({ project }) {
-  const { title, creator, image, description, tags, links, status } = project;
+  const { title, creator, image, description, tags, links, status, category } = project;
   
   return (
     <motion.div 
@@ -18,10 +19,15 @@ export default function ProjectCard({ project }) {
           alt={title}
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 right-2 flex items-center space-x-2">
+          {category === 'Research' && (
+            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium flex items-center">
+              <FiFile className="mr-1" /> Research
+            </span>
+          )}
           <span className={`
             px-3 py-1 rounded-full text-sm font-medium
-            ${status === 'Completed' ? 'bg-green-100 text-green-800' : 
+            ${status === 'Completed' || status === 'Published' ? 'bg-green-100 text-green-800' : 
               status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
               'bg-blue-100 text-blue-800'}
           `}>
@@ -70,6 +76,16 @@ export default function ProjectCard({ project }) {
               className="flex items-center text-gray-600 hover:text-accent transition"
             >
               <FiExternalLink className="mr-1" /> Demo
+            </a>
+          )}
+          {links.pdf && (
+            <a 
+              href={links.pdf}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center text-gray-600 hover:text-accent transition"
+            >
+              <FiFile className="mr-1" /> PDF
             </a>
           )}
         </div>

@@ -1,3 +1,4 @@
+// ProjectGallery.jsx
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProjectCard from './ProjectCard';
@@ -6,10 +7,12 @@ export default function ProjectGallery({ projects }) {
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   
-  const filters = ['All', 'Machine Learning', 'Computer Vision', 'NLP', 'Robotics'];
+  const filters = ['All', 'Project', 'Research', 'Machine Learning', 'Agriculture'];
 
   const filteredProjects = projects.filter(project => {
-    const matchesFilter = filter === 'All' || project.tags.includes(filter);
+    const matchesFilter = filter === 'All' || 
+                         project.tags.includes(filter) || 
+                         project.category === filter;
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          project.creator.toLowerCase().includes(searchQuery.toLowerCase());
@@ -21,10 +24,10 @@ export default function ProjectGallery({ projects }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-primary mb-4">
-            AI Project Showcase
+            Projects & Research
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover innovative AI projects created by our talented community members.
+            Explore innovative projects and research from our community.
           </p>
         </div>
 
@@ -61,7 +64,7 @@ export default function ProjectGallery({ projects }) {
             layout
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {filteredProjects.map((project, index) => (
+            {filteredProjects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
           </motion.div>
