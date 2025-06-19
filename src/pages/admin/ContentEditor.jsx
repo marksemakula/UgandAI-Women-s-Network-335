@@ -394,7 +394,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
                         <FiEdit className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={handleDelete}
+                        onClick={() => handleDelete(project.id)}
                         className="text-red-500 hover:text-red-700"
                         title="Delete"
                       >
@@ -676,7 +676,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
                         <FiEdit className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={handleDelete}
+                        onClick={() => handleDelete(event.id)}
                         className="text-red-500 hover:text-red-700"
                         title="Delete"
                       >
@@ -843,7 +843,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
                         <FiEdit className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={handleDelete}
+                        onClick={() => handleDelete(content.id)}
                         className="text-red-500 hover:text-red-700"
                         title="Delete"
                       >

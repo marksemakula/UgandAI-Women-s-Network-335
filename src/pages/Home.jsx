@@ -21,70 +21,69 @@ const featuredStories = [
   }
 ];
 
-// Default events in case localStorage is empty
-const defaultEvents = [
-  {
-    title: "AI in Healthcare Workshop",
-    date: "2025-06-15",
-    time: "14:00 - 17:00",
-    location: "Kampala Innovation Hub",
-    type: "Workshop",
-    description: "Hands-on workshop exploring AI applications in healthcare diagnostics and patient care."
-  },
-  {
-    title: "Google Developer Group Meet",
-    date: "2025-08-15",
-    time: "17:00 - 19:00 EAT",
-    location: "Brunswick",
-    type: "Conference",
-    description: "Community event focused on showcasing & sharing experiences & opportunities using Canva, Perplexity & Napkin AI for fashion, digital art and documentaries."
-  }
-];
-
 export default function Home() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Function to load and process events
+  const loadEvents = () => {
+    try {
+      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
+      
+      // Process events to ensure proper date format
+      const processedEvents = savedEvents.map(event => ({
+        ...event,
+        // Ensure date is in correct format (YYYY-MM-DD)
+        date: event.date ? new Date(event.date).toISOString().split('T')[0] : null,
+        // Set default type if missing
+        type: event.type || 'Event'
+      }));
+
+      // Filter upcoming events (include events without dates)
+      const filteredEvents = processedEvents.filter(event => {
+        if (!event.date) return true;
+        const eventDate = new Date(event.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return eventDate >= today;
+      });
+
+      // Sort events by date (soonest first, undefined dates last)
+      filteredEvents.sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(a.date) - new Date(b.date);
+      });
+
+      setUpcomingEvents(filteredEvents);
+    } catch (error) {
+      console.error('Error loading events:', error);
+      setUpcomingEvents([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadEvents = () => {
-      try {
-        // Try to load events from localStorage
-        const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-        
-        // Filter to only show upcoming events (or events without dates)
-        const filteredEvents = savedEvents.filter(event => {
-          if (!event.date) return true;
-          const eventDate = new Date(event.date);
-          return eventDate >= new Date();
-        });
+    // Initial load
+    loadEvents();
 
-        // Sort events by date (earliest first)
-        const sortedEvents = filteredEvents.sort((a, b) => {
-          if (!a.date) return 1;
-          if (!b.date) return -1;
-          return new Date(a.date) - new Date(b.date);
-        });
-
-        // Use default events if no events found in localStorage
-        setUpcomingEvents(sortedEvents.length > 0 ? sortedEvents : defaultEvents);
-      } catch (error) {
-        console.error('Error loading events:', error);
-        setUpcomingEvents(defaultEvents);
-      } finally {
-        setIsLoading(false);
+    // Set up storage event listener
+    const handleStorageChange = (e) => {
+      if (e.key === 'uwiai_events') {
+        loadEvents();
       }
     };
 
-    loadEvents();
-
-    // Optional: Listen for storage changes from CMS
-    const handleStorageChange = () => {
-      loadEvents();
-    };
-
     window.addEventListener('storage', handleStorageChange);
+
+    // Custom event listener for same-tab updates
+    const handleCustomEventUpdate = () => loadEvents();
+    window.addEventListener('eventUpdated', handleCustomEventUpdate);
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('eventUpdated', handleCustomEventUpdate);
     };
   }, []);
 
