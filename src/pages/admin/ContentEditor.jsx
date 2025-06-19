@@ -163,6 +163,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     try {
       localStorage.setItem(`uwiai_${dataType}`, JSON.stringify(data));
       toast.success(`${dataType.charAt(0).toUpperCase() + dataType.slice(1)} saved successfully!`);
+      
+      // Dispatch custom event to notify other components
+      const event = new CustomEvent('contentUpdated', {
+        detail: { type: dataType }
+      });
+      window.dispatchEvent(event);
+      
       navigate(`/admin/${dataType}`);
     } catch (error) {
       console.error('Error saving data:', error);
@@ -489,11 +496,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             </div>
           </div>
 
-          {/* File Upload Section */}
           <div className="mb-6">
             <h3 className="text-lg font-medium text-gray-800 mb-4">Project Files</h3>
             
-            {/* Video Upload */}
             <div className="mb-4 p-4 border border-gray-200 rounded-lg">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <FiVideo className="inline mr-2" />
@@ -531,7 +536,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               )}
             </div>
 
-            {/* PDF Upload */}
             <div className="mb-4 p-4 border border-gray-200 rounded-lg">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <FiFile className="inline mr-2" />
@@ -575,7 +579,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               )}
             </div>
 
-            {/* Text File Upload */}
             <div className="mb-4 p-4 border border-gray-200 rounded-lg">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <FiFileText className="inline mr-2" />
@@ -885,6 +888,8 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
                 <option value="mission">Mission</option>
                 <option value="team">Team</option>
                 <option value="contact">Contact</option>
+                <option value="stories">Featured Stories</option>
+                <option value="resources">Resources</option>
               </select>
             </div>
             <div>
@@ -906,6 +911,16 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               onChange={(e) => setCurrentContent({...currentContent, content: e.target.value})}
               className="w-full p-2 border border-gray-300 rounded min-h-[200px]"
               required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Last Updated</label>
+            <input
+              type="text"
+              value={new Date(currentContent.lastUpdated).toLocaleString()}
+              readOnly
+              className="w-full p-2 border border-gray-300 rounded bg-gray-50"
             />
           </div>
 

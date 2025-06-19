@@ -25,7 +25,7 @@ export default function Home() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Function to load and process events
+  // Enhanced event loading function
   const loadEvents = () => {
     try {
       const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
@@ -33,9 +33,7 @@ export default function Home() {
       // Process events to ensure proper date format
       const processedEvents = savedEvents.map(event => ({
         ...event,
-        // Ensure date is in correct format (YYYY-MM-DD)
         date: event.date ? new Date(event.date).toISOString().split('T')[0] : null,
-        // Set default type if missing
         type: event.type || 'Event'
       }));
 
@@ -68,7 +66,7 @@ export default function Home() {
     // Initial load
     loadEvents();
 
-    // Set up storage event listener
+    // Enhanced storage event listener
     const handleStorageChange = (e) => {
       if (e.key === 'uwiai_events') {
         loadEvents();
@@ -77,13 +75,13 @@ export default function Home() {
 
     window.addEventListener('storage', handleStorageChange);
 
-    // Custom event listener for same-tab updates
-    const handleCustomEventUpdate = () => loadEvents();
-    window.addEventListener('eventUpdated', handleCustomEventUpdate);
+    // Dispatch custom event when events are updated in the same tab
+    const handleCustomEvent = () => loadEvents();
+    window.addEventListener('eventsUpdated', handleCustomEvent);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('eventUpdated', handleCustomEventUpdate);
+      window.removeEventListener('eventsUpdated', handleCustomEvent);
     };
   }, []);
 
