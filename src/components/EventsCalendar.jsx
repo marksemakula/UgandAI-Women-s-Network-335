@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import EventCard from './EventCard';
 import { motion } from 'framer-motion';
 import { FiFilter } from 'react-icons/fi';
+import { format, parseISO, isAfter } from 'date-fns';
+import { toast } from 'react-toastify';
 
 const eventTypes = [
   { value: 'All', label: 'All Events' },
@@ -17,27 +19,75 @@ export default function EventsCalendar() {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const loadEvents = () => {
+    try {
+      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
+      
+      // Process and validate events
+      const processedEvents = savedEvents.map(event => ({
+        ...event,
+        // Ensure date is properly formatted
+        date: event.date || null,
+        // Set default type if missing
+        type: event.type || 'Event'
+      }));
+
+      // Filter upcoming events (include events without dates)
+      const upcomingEvents = processedEvents.filter(event => {
+        if (!event.date) return true;
+        try {
+          const eventDate = parseISO(event.date);
+          return isAfter(eventDate, new Date());
+        } catch (error) {
+          console.error('Error parsing event date:', error);
+          return false;
+        }
+      });
+
+      // Sort events by date (soonest first, undefined dates last)
+      upcomingEvents.sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        try {
+          return parseISO(a.date) - parseISO(b.date);
+        } catch (error) {
+          return 0;
+        }
+      });
+
+      setEvents(upcomingEvents);
+    } catch (error) {
+      console.error('Error loading events:', error);
+      toast.error('Failed to load events');
+      setEvents([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadEvents = () => {
-      try {
-        const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-        const upcomingEvents = savedEvents.filter(event => {
-          if (!event.date) return true;
-          const eventDate = new Date(event.date);
-          return eventDate >= new Date();
-        });
-        upcomingEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-        setEvents(upcomingEvents);
-      } catch (error) {
-        console.error('Error loading events:', error);
-      } finally {
-        setIsLoading(false);
+    // Initial load
+    loadEvents();
+
+    // Listen for localStorage changes from other tabs
+    const handleStorageChange = (e) => {
+      if (e.key === 'uwiai_events') {
+        loadEvents();
       }
     };
 
-    loadEvents();
-    const interval = setInterval(loadEvents, 60000);
-    return () => clearInterval(interval);
+    // Listen for custom event from ContentEditor in same tab
+    const handleCustomEvent = () => {
+      loadEvents();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('eventsUpdated', handleCustomEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('eventsUpdated', handleCustomEvent);
+    };
   }, []);
 
   const filteredEvents = events.filter(event => 

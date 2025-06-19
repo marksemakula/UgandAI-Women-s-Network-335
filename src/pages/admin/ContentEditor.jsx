@@ -158,17 +158,26 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }
   }, [type, mode]);
 
-  // Save data to localStorage
+  // Save data to localStorage with proper event dispatching
   const saveData = useCallback((data, dataType) => {
     try {
       localStorage.setItem(`uwiai_${dataType}`, JSON.stringify(data));
       toast.success(`${dataType.charAt(0).toUpperCase() + dataType.slice(1)} saved successfully!`);
       
-      // Dispatch custom event to notify other components
-      const event = new CustomEvent('contentUpdated', {
+      // Dispatch custom event to notify other components in the same tab
+      window.dispatchEvent(new CustomEvent('contentUpdated', {
         detail: { type: dataType }
-      });
-      window.dispatchEvent(event);
+      }));
+      
+      // Dispatch storage event to notify other tabs
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: `uwiai_${dataType}`
+      }));
+      
+      // Special handling for events to ensure calendar updates
+      if (dataType === 'events') {
+        window.dispatchEvent(new CustomEvent('eventsUpdated'));
+      }
       
       navigate(`/admin/${dataType}`);
     } catch (error) {
