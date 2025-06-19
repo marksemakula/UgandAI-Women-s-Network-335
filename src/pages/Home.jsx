@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import Hero from '../components/Hero';
 import FeatureStory from '../components/FeatureStory';
 import EventsCalendar from '../components/EventsCalendar';
@@ -20,7 +21,8 @@ const featuredStories = [
   }
 ];
 
-const upcomingEvents = [
+// Default events in case localStorage is empty
+const defaultEvents = [
   {
     title: "AI in Healthcare Workshop",
     date: "2025-06-15",
@@ -40,6 +42,52 @@ const upcomingEvents = [
 ];
 
 export default function Home() {
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadEvents = () => {
+      try {
+        // Try to load events from localStorage
+        const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
+        
+        // Filter to only show upcoming events (or events without dates)
+        const filteredEvents = savedEvents.filter(event => {
+          if (!event.date) return true;
+          const eventDate = new Date(event.date);
+          return eventDate >= new Date();
+        });
+
+        // Sort events by date (earliest first)
+        const sortedEvents = filteredEvents.sort((a, b) => {
+          if (!a.date) return 1;
+          if (!b.date) return -1;
+          return new Date(a.date) - new Date(b.date);
+        });
+
+        // Use default events if no events found in localStorage
+        setUpcomingEvents(sortedEvents.length > 0 ? sortedEvents : defaultEvents);
+      } catch (error) {
+        console.error('Error loading events:', error);
+        setUpcomingEvents(defaultEvents);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadEvents();
+
+    // Optional: Listen for storage changes from CMS
+    const handleStorageChange = () => {
+      loadEvents();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen">
       <Hero />
@@ -67,7 +115,13 @@ export default function Home() {
         </div>
       </section>
       
-      <EventsCalendar events={upcomingEvents} />
+      {isLoading ? (
+        <div className="py-16 flex justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+        </div>
+      ) : (
+        <EventsCalendar events={upcomingEvents} />
+      )}
     </div>
   );
 }
