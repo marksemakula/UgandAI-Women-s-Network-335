@@ -24,17 +24,35 @@ import {
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
+// Event synchronization helper
+const triggerEventUpdate = () => {
+  // Dispatch to same tab
+  const updateEvent = new CustomEvent('eventsUpdated', {
+    detail: { timestamp: Date.now() }
+  });
+  window.dispatchEvent(updateEvent);
+  
+  // Dispatch to other tabs
+  const storageEvent = new StorageEvent('storage', {
+    key: 'uwiai_events',
+    newValue: localStorage.getItem('uwiai_events'),
+    oldValue: '',
+    storageArea: localStorage,
+    url: window.location.href
+  });
+  window.dispatchEvent(storageEvent);
+};
+
 export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   
-  // State for different content types
+  // State initialization
   const [projects, setProjects] = useState([]);
   const [events, setEvents] = useState([]);
   const [contentSections, setContentSections] = useState([]);
   
-  // Current item states
   const [currentProject, setCurrentProject] = useState({
     id: '',
     title: '',
@@ -43,16 +61,8 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     tags: [],
     status: 'Completed',
     links: { github: '', demo: '', pdf: '' },
-    files: {
-      video: null,
-      pdf: null,
-      text: null
-    },
-    filePreviews: {
-      video: '',
-      pdf: '',
-      text: ''
-    }
+    files: { video: null, pdf: null, text: null },
+    filePreviews: { video: '', pdf: '', text: '' }
   });
   
   const [currentEvent, setCurrentEvent] = useState({
@@ -76,196 +86,152 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   });
   
   const [newTag, setNewTag] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Load data from localStorage
-  useEffect(() => {
-    const loadData = () => {
-      try {
-        const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
-        const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-        const savedContent = JSON.parse(localStorage.getItem('uwiai_content')) || [];
-        
-        setProjects(savedProjects);
-        setEvents(savedEvents);
-        setContentSections(savedContent);
-        
-        // Load item for editing if in edit mode
-        if (mode === 'edit' && id) {
-          if (type === 'projects') {
-            const project = savedProjects.find(p => p.id === id);
-            if (project) setCurrentProject(project);
-          } else if (type === 'events') {
-            const event = savedEvents.find(e => e.id === id);
-            if (event) setCurrentEvent(event);
-          } else if (type === 'content') {
-            const content = savedContent.find(c => c.id === id);
-            if (content) setCurrentContent(content);
-          }
+  // Enhanced data loader
+  const loadData = useCallback(() => {
+    try {
+      const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
+      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
+      const savedContent = JSON.parse(localStorage.getItem('uwiai_content')) || [];
+      
+      setProjects(savedProjects);
+      setEvents(savedEvents);
+      setContentSections(savedContent);
+      
+      if (mode === 'edit' && id) {
+        if (type === 'projects') {
+          const project = savedProjects.find(p => p.id === id);
+          if (project) setCurrentProject(project);
+        } else if (type === 'events') {
+          const event = savedEvents.find(e => e.id === id);
+          if (event) setCurrentEvent(event);
+        } else if (type === 'content') {
+          const content = savedContent.find(c => c.id === id);
+          if (content) setCurrentContent(content);
         }
-      } catch (error) {
-        console.error('Error loading data:', error);
-        toast.error('Failed to load data');
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+      toast.error('Failed to load data. Please refresh the page.');
+    }
+  }, [type, mode, id]);
+
+  useEffect(() => {
+    loadData();
+    
+    // Listen for updates from other instances
+    const handleStorageChange = (e) => {
+      if (e.key === `uwiai_${type}`) {
+        loadData();
       }
     };
     
-    loadData();
-  }, [type, mode, id]);
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [loadData, type]);
 
-  // Reset form when creating new item
+  // Reset form for new items
   useEffect(() => {
     if (mode === 'create') {
-      if (type === 'projects') {
-        setCurrentProject({
-          id: '',
-          title: '',
-          creator: '',
-          description: '',
-          tags: [],
-          status: 'Completed',
-          links: { github: '', demo: '', pdf: '' },
-          files: {
-            video: null,
-            pdf: null,
-            text: null
-          },
-          filePreviews: {
-            video: '',
-            pdf: '',
-            text: ''
-          }
-        });
-      } else if (type === 'events') {
-        setCurrentEvent({
-          id: '',
-          title: '',
-          date: '',
-          time: '',
-          location: '',
-          description: '',
-          type: 'Training',
-          googleFormLink: '',
-          formResponsesLink: ''
-        });
-      } else if (type === 'content') {
-        setCurrentContent({
-          id: '',
-          section: '',
-          title: '',
-          content: '',
+      const resetStates = {
+        projects: () => setCurrentProject({
+          id: '', title: '', creator: '', description: '', tags: [],
+          status: 'Completed', links: { github: '', demo: '', pdf: '' },
+          files: { video: null, pdf: null, text: null },
+          filePreviews: { video: '', pdf: '', text: '' }
+        }),
+        events: () => setCurrentEvent({
+          id: '', title: '', date: '', time: '', location: '',
+          description: '', type: 'Training',
+          googleFormLink: '', formResponsesLink: ''
+        }),
+        content: () => setCurrentContent({
+          id: '', section: '', title: '', content: '',
           lastUpdated: new Date().toISOString()
-        });
-      }
+        })
+      };
+      
+      resetStates[type]?.();
     }
   }, [type, mode]);
 
-  // Save data to localStorage with proper event dispatching
-  const saveData = useCallback((data, dataType) => {
+  // Enhanced save function with synchronization
+  const saveData = useCallback(async (data, dataType) => {
+    setIsSaving(true);
     try {
-      localStorage.setItem(`uwiai_${dataType}`, JSON.stringify(data));
-      toast.success(`${dataType.charAt(0).toUpperCase() + dataType.slice(1)} saved successfully!`);
+      const updatedData = JSON.stringify(data);
+      localStorage.setItem(`uwiai_${dataType}`, updatedData);
       
-      // Dispatch custom event to notify other components in the same tab
-      window.dispatchEvent(new CustomEvent('contentUpdated', {
-        detail: { type: dataType }
-      }));
-      
-      // Dispatch storage event to notify other tabs
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: `uwiai_${dataType}`
-      }));
-      
-      // Special handling for events to ensure calendar updates
+      // Trigger updates
       if (dataType === 'events') {
-        window.dispatchEvent(new CustomEvent('eventsUpdated'));
+        triggerEventUpdate();
+      } else {
+        window.dispatchEvent(new CustomEvent('contentUpdated', {
+          detail: { type: dataType }
+        }));
       }
       
+      toast.success(`${dataType.charAt(0).toUpperCase() + dataType.slice(1)} saved successfully!`);
       navigate(`/admin/${dataType}`);
     } catch (error) {
       console.error('Error saving data:', error);
-      toast.error('Failed to save data');
+      toast.error('Failed to save data. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   }, [navigate]);
 
-  // Handle file uploads for projects
+  // Project file handling
   const handleFileUpload = (fileType, e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
       toast.error('File size should be less than 10MB');
       return;
     }
 
-    // Set file object
     setCurrentProject(prev => ({
       ...prev,
-      files: {
-        ...prev.files,
-        [fileType]: file
-      }
+      files: { ...prev.files, [fileType]: file }
     }));
 
-    // Create preview if applicable
-    if (fileType === 'video') {
-      const videoURL = URL.createObjectURL(file);
+    if (fileType === 'video' || fileType === 'pdf') {
+      const url = URL.createObjectURL(file);
       setCurrentProject(prev => ({
         ...prev,
-        filePreviews: {
-          ...prev.filePreviews,
-          video: videoURL
-        }
-      }));
-    } else if (fileType === 'pdf') {
-      const pdfURL = URL.createObjectURL(file);
-      setCurrentProject(prev => ({
-        ...prev,
-        filePreviews: {
-          ...prev.filePreviews,
-          pdf: pdfURL
-        }
+        filePreviews: { ...prev.filePreviews, [fileType]: url }
       }));
     } else if (fileType === 'text') {
       const reader = new FileReader();
       reader.onload = (e) => {
         setCurrentProject(prev => ({
           ...prev,
-          filePreviews: {
-            ...prev.filePreviews,
-            text: e.target.result
-          }
+          filePreviews: { ...prev.filePreviews, text: e.target.result }
         }));
       };
       reader.readAsText(file);
     }
 
-    toast.success(`${fileType.toUpperCase()} file uploaded successfully`);
+    toast.success(`${fileType.toUpperCase()} uploaded successfully`);
   };
 
-  // Remove uploaded file
   const removeFile = (fileType) => {
     setCurrentProject(prev => ({
       ...prev,
-      files: {
-        ...prev.files,
-        [fileType]: null
-      },
-      filePreviews: {
-        ...prev.filePreviews,
-        [fileType]: ''
-      }
+      files: { ...prev.files, [fileType]: null },
+      filePreviews: { ...prev.filePreviews, [fileType]: '' }
     }));
-    toast.info(`${fileType.toUpperCase()} file removed`);
+    toast.info(`${fileType.toUpperCase()} removed`);
   };
 
-  // Handle project form submission
+  // Form submission handlers
   const handleProjectSubmit = (e) => {
     e.preventDefault();
     const newProject = {
       ...currentProject,
       id: mode === 'edit' ? currentProject.id : Date.now().toString(),
-      // For demo purposes, we're using the preview URLs
-      // In a real app, you would upload the files to a server here
       files: {
         video: currentProject.filePreviews.video,
         pdf: currentProject.filePreviews.pdf,
@@ -280,7 +246,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedProjects, 'projects');
   };
 
-  // Handle event form submission
   const handleEventSubmit = (e) => {
     e.preventDefault();
     if (!currentEvent.googleFormLink.includes('docs.google.com/forms')) {
@@ -302,7 +267,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedEvents, 'events');
   };
 
-  // Handle content form submission
   const handleContentSubmit = (e) => {
     e.preventDefault();
     const newContent = {
@@ -318,21 +282,19 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedContent, 'content');
   };
 
-  // Delete item
   const handleDelete = () => {
-    if (type === 'projects') {
-      const updatedProjects = projects.filter(p => p.id !== id);
-      saveData(updatedProjects, 'projects');
-    } else if (type === 'events') {
-      const updatedEvents = events.filter(e => e.id !== id);
-      saveData(updatedEvents, 'events');
-    } else if (type === 'content') {
-      const updatedContent = contentSections.filter(c => c.id !== id);
-      saveData(updatedContent, 'content');
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      if (type === 'projects') {
+        saveData(projects.filter(p => p.id !== id), 'projects');
+      } else if (type === 'events') {
+        saveData(events.filter(e => e.id !== id), 'events');
+      } else if (type === 'content') {
+        saveData(contentSections.filter(c => c.id !== id), 'content');
+      }
     }
   };
 
-  // Tag management for projects
+  // Tag management
   const addTag = () => {
     if (newTag && !currentProject.tags.includes(newTag)) {
       setCurrentProject(prev => ({
@@ -350,7 +312,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }));
   };
 
-  // Render project form
+  // Render methods for each content type
   if (type === 'projects') {
     return mode === 'list' ? (
       <div className="p-8">
@@ -635,9 +597,14 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <button
               type="submit"
               className="px-4 py-2 bg-accent text-white rounded hover:bg-accent-light"
+              disabled={isSaving}
             >
-              <FiSave className="inline mr-2" />
-              Save Project
+              {isSaving ? 'Saving...' : (
+                <>
+                  <FiSave className="inline mr-2" />
+                  Save Project
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -645,7 +612,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     );
   }
 
-  // Render events form
   if (type === 'events') {
     return mode === 'list' ? (
       <div className="p-8">
@@ -806,9 +772,14 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <button
               type="submit"
               className="px-4 py-2 bg-accent text-white rounded hover:bg-accent-light"
+              disabled={isSaving}
             >
-              <FiSave className="inline mr-2" />
-              Save Event
+              {isSaving ? 'Saving...' : (
+                <>
+                  <FiSave className="inline mr-2" />
+                  Save Event
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -816,7 +787,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     );
   }
 
-  // Render content management
   if (type === 'content') {
     return mode === 'list' ? (
       <div className="p-8">
@@ -944,9 +914,14 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <button
               type="submit"
               className="px-4 py-2 bg-accent text-white rounded hover:bg-accent-light"
+              disabled={isSaving}
             >
-              <FiSave className="inline mr-2" />
-              Save Content
+              {isSaving ? 'Saving...' : (
+                <>
+                  <FiSave className="inline mr-2" />
+                  Save Content
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -954,7 +929,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     );
   }
 
-  // Default view
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold text-primary mb-6">Content Editor</h1>

@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-import EventCard from './EventCard';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FiFilter } from 'react-icons/fi';
-import { format, parseISO, isAfter } from 'date-fns';
+import { FiFilter, FiCalendar, FiMapPin, FiClock, FiExternalLink } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import EventCard from './EventCard';
 
 const eventTypes = [
   { value: 'All', label: 'All Events' },
@@ -19,40 +18,44 @@ export default function EventsCalendar() {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadEvents = () => {
+  const loadEvents = useCallback(() => {
+    setIsLoading(true);
     try {
       const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
       
       // Process and validate events
       const processedEvents = savedEvents.map(event => ({
         ...event,
-        // Ensure date is properly formatted
+        id: event.id || Date.now().toString(),
+        title: event.title || 'Untitled Event',
         date: event.date || null,
-        // Set default type if missing
-        type: event.type || 'Event'
+        time: event.time || '',
+        location: event.location || 'Location TBD',
+        type: event.type || 'Event',
+        description: event.description || '',
+        googleFormLink: event.googleFormLink || '',
+        formResponsesLink: event.formResponsesLink || ''
       }));
 
-      // Filter upcoming events (include events without dates)
+      // Filter upcoming events
       const upcomingEvents = processedEvents.filter(event => {
         if (!event.date) return true;
         try {
-          const eventDate = parseISO(event.date);
-          return isAfter(eventDate, new Date());
+          const eventDate = new Date(event.date);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          return eventDate >= today;
         } catch (error) {
-          console.error('Error parsing event date:', error);
+          console.error('Invalid date format:', event.date);
           return false;
         }
       });
 
-      // Sort events by date (soonest first, undefined dates last)
+      // Sort events by date
       upcomingEvents.sort((a, b) => {
         if (!a.date) return 1;
         if (!b.date) return -1;
-        try {
-          return parseISO(a.date) - parseISO(b.date);
-        } catch (error) {
-          return 0;
-        }
+        return new Date(a.date) - new Date(b.date);
       });
 
       setEvents(upcomingEvents);
@@ -63,32 +66,33 @@ export default function EventsCalendar() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
+  // Listen for event updates
   useEffect(() => {
     // Initial load
     loadEvents();
 
-    // Listen for localStorage changes from other tabs
+    // Custom event listener for same-tab updates
+    const handleCustomEvent = () => {
+      loadEvents();
+    };
+
+    // Storage event listener for cross-tab updates
     const handleStorageChange = (e) => {
       if (e.key === 'uwiai_events') {
         loadEvents();
       }
     };
 
-    // Listen for custom event from ContentEditor in same tab
-    const handleCustomEvent = () => {
-      loadEvents();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
     window.addEventListener('eventsUpdated', handleCustomEvent);
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('eventsUpdated', handleCustomEvent);
+      window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [loadEvents]);
 
   const filteredEvents = events.filter(event => 
     activeFilter === 'All' || event.type === activeFilter
@@ -100,8 +104,7 @@ export default function EventsCalendar() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-primary mb-4">Upcoming Events</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Join us for hands-on AI training sessions, workshops, networking events, and ceremonies
-            designed specifically for women in technology.
+            Join our upcoming AI training sessions, workshops, and networking events.
           </p>
         </div>
 

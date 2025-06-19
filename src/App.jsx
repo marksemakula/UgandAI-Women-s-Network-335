@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useState, createContext, useContext, useCallback, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Membership from './pages/Membership';
@@ -15,6 +16,60 @@ import TalentPoolManager from './pages/admin/TalentPoolManager';
 import Login from './pages/admin/Login';
 import DashboardHome from './pages/admin/DashboardHome';
 
+// Create Event Context
+const EventContext = createContext();
+
+// Custom hook for event synchronization
+function useEventSync(callback) {
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'uwiai_events') {
+        callback();
+      }
+    };
+
+    const handleCustomEvent = () => callback();
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('eventsUpdated', handleCustomEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('eventsUpdated', handleCustomEvent);
+    };
+  }, [callback]);
+}
+
+// Event Provider Component
+function EventProvider({ children }) {
+  const [events, setEvents] = useState([]);
+
+  const loadEvents = useCallback(() => {
+    try {
+      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
+      setEvents(savedEvents);
+    } catch (error) {
+      console.error('Error loading events:', error);
+    }
+  }, []);
+
+  useEventSync(loadEvents);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+
+  return (
+    <EventContext.Provider value={{ events, loadEvents }}>
+      {children}
+    </EventContext.Provider>
+  );
+}
+
+function useEvents() {
+  return useContext(EventContext);
+}
+
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem('uwiai_admin_token');
@@ -23,79 +78,84 @@ const ProtectedRoute = ({ children }) => {
 
 export default function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/membership" element={<Membership />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/innovators" element={<Innovators />} />
-            <Route path="/mentor" element={<Mentor />} />
-            <Route path="/talent-pool" element={<TalentPool />} />
-            <Route path="/talent/:username" element={<TalentProfile />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<Login />} />
-            <Route 
-              path="/admin" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<DashboardHome />} />
+    <EventProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/membership" element={<Membership />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/innovators" element={<Innovators />} />
+              <Route path="/mentor" element={<Mentor />} />
+              <Route path="/talent-pool" element={<TalentPool />} />
+              <Route path="/talent/:username" element={<TalentProfile />} />
               
-              {/* Projects Management */}
-              <Route path="projects" element={<ContentEditor type="projects" />} />
-              <Route path="projects/new" element={<ContentEditor type="projects" mode="create" />} />
-              <Route path="projects/:id/edit" element={<ContentEditor type="projects" mode="edit" />} />
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<Login />} />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<DashboardHome />} />
+                
+                {/* Projects Management */}
+                <Route path="projects" element={<ContentEditor type="projects" />} />
+                <Route path="projects/new" element={<ContentEditor type="projects" mode="create" />} />
+                <Route path="projects/:id/edit" element={<ContentEditor type="projects" mode="edit" />} />
+                
+                {/* Events Management */}
+                <Route path="events" element={<ContentEditor type="events" />} />
+                <Route path="events/new" element={<ContentEditor type="events" mode="create" />} />
+                <Route path="events/:id/edit" element={<ContentEditor type="events" mode="edit" />} />
+                
+                {/* Content Management */}
+                <Route path="content" element={<ContentEditor type="content" />} />
+                <Route path="content/:section" element={<ContentEditor type="content" />} />
+                <Route path="content/new" element={<ContentEditor type="content" mode="create" />} />
+                
+                {/* Talent Pool Management */}
+                <Route path="talent-pool" element={<TalentPoolManager />} />
+              </Route>
               
-              {/* Events Management */}
-              <Route path="events" element={<ContentEditor type="events" />} />
-              <Route path="events/new" element={<ContentEditor type="events" mode="create" />} />
-              <Route path="events/:id/edit" element={<ContentEditor type="events" mode="edit" />} />
-              
-              {/* Content Management */}
-              <Route path="content" element={<ContentEditor type="content" />} />
-              <Route path="content/:section" element={<ContentEditor type="content" />} />
-              <Route path="content/new" element={<ContentEditor type="content" mode="create" />} />
-              
-              {/* Talent Pool Management */}
-              <Route path="talent-pool" element={<TalentPoolManager />} />
-            </Route>
-            
-            {/* Catch-all for admin routes */}
-            <Route 
-              path="/admin/*" 
-              element={
-                <ProtectedRoute>
-                  <Navigate to="/admin" replace />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
-        </main>
+              {/* Catch-all for admin routes */}
+              <Route 
+                path="/admin/*" 
+                element={
+                  <ProtectedRoute>
+                    <Navigate to="/admin" replace />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </main>
 
-        {/* Toast Notification Container */}
-        <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          toastClassName="font-sans"
-          progressClassName="bg-accent"
-        />
-      </div>
-    </Router>
+          {/* Toast Notification Container */}
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            toastClassName="font-sans"
+            progressClassName="bg-accent"
+          />
+        </div>
+      </Router>
+    </EventProvider>
   );
 }
+
+// Export the useEvents hook for use in other components
+export { useEvents };
