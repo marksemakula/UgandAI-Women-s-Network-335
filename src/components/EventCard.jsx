@@ -16,8 +16,18 @@ export default function EventCard({ event }) {
   } = event;
 
   // Format date with proper error handling
-  const formattedDate = date ? format(new Date(date), 'MMMM d, yyyy') : 'Date TBD';
-  const isPastEvent = date ? new Date(date) < new Date() : false;
+  let formattedDate = 'Date TBD';
+  let isPastEvent = false;
+  
+  try {
+    if (date) {
+      const eventDate = new Date(date);
+      formattedDate = format(eventDate, 'MMMM d, yyyy');
+      isPastEvent = eventDate < new Date();
+    }
+  } catch (error) {
+    console.error('Invalid date format:', date);
+  }
 
   const handleRegisterClick = (e) => {
     if (!googleFormLink) {

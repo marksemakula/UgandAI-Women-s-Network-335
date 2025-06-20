@@ -23,34 +23,16 @@ import {
   FiFileText
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
-
-// Event synchronization helper
-const triggerEventUpdate = () => {
-  // Dispatch to same tab
-  const updateEvent = new CustomEvent('eventsUpdated', {
-    detail: { timestamp: Date.now() }
-  });
-  window.dispatchEvent(updateEvent);
-  
-  // Dispatch to other tabs
-  const storageEvent = new StorageEvent('storage', {
-    key: 'uwiai_events',
-    newValue: localStorage.getItem('uwiai_events'),
-    oldValue: '',
-    storageArea: localStorage,
-    url: window.location.href
-  });
-  window.dispatchEvent(storageEvent);
-};
+import { useEvents } from '../context/EventContext';
 
 export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { events, updateEvents } = useEvents();
   
   // State initialization
   const [projects, setProjects] = useState([]);
-  const [events, setEvents] = useState([]);
   const [contentSections, setContentSections] = useState([]);
   
   const [currentProject, setCurrentProject] = useState({
@@ -92,11 +74,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const loadData = useCallback(() => {
     try {
       const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
-      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
       const savedContent = JSON.parse(localStorage.getItem('uwiai_content')) || [];
       
       setProjects(savedProjects);
-      setEvents(savedEvents);
       setContentSections(savedContent);
       
       if (mode === 'edit' && id) {
@@ -104,7 +84,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
           const project = savedProjects.find(p => p.id === id);
           if (project) setCurrentProject(project);
         } else if (type === 'events') {
-          const event = savedEvents.find(e => e.id === id);
+          const event = events.find(e => e.id === id);
           if (event) setCurrentEvent(event);
         } else if (type === 'content') {
           const content = savedContent.find(c => c.id === id);
@@ -115,12 +95,11 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       console.error('Error loading data:', error);
       toast.error('Failed to load data. Please refresh the page.');
     }
-  }, [type, mode, id]);
+  }, [type, mode, id, events]);
 
   useEffect(() => {
     loadData();
     
-    // Listen for updates from other instances
     const handleStorageChange = (e) => {
       if (e.key === `uwiai_${type}`) {
         loadData();
@@ -160,13 +139,10 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const saveData = useCallback(async (data, dataType) => {
     setIsSaving(true);
     try {
-      const updatedData = JSON.stringify(data);
-      localStorage.setItem(`uwiai_${dataType}`, updatedData);
-      
-      // Trigger updates
       if (dataType === 'events') {
-        triggerEventUpdate();
+        await updateEvents(data);
       } else {
+        localStorage.setItem(`uwiai_${dataType}`, JSON.stringify(data));
         window.dispatchEvent(new CustomEvent('contentUpdated', {
           detail: { type: dataType }
         }));
@@ -180,7 +156,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     } finally {
       setIsSaving(false);
     }
-  }, [navigate]);
+  }, [navigate, updateEvents]);
 
   // Project file handling
   const handleFileUpload = (fileType, e) => {

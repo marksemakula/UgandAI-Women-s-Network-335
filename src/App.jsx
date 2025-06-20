@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useState, createContext, useContext, useCallback, useEffect } from 'react';
+import { EventProvider } from './context/EventContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Membership from './pages/Membership';
@@ -15,60 +15,6 @@ import ContentEditor from './pages/admin/ContentEditor';
 import TalentPoolManager from './pages/admin/TalentPoolManager';
 import Login from './pages/admin/Login';
 import DashboardHome from './pages/admin/DashboardHome';
-
-// Create Event Context
-const EventContext = createContext();
-
-// Custom hook for event synchronization
-function useEventSync(callback) {
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'uwiai_events') {
-        callback();
-      }
-    };
-
-    const handleCustomEvent = () => callback();
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('eventsUpdated', handleCustomEvent);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('eventsUpdated', handleCustomEvent);
-    };
-  }, [callback]);
-}
-
-// Event Provider Component
-function EventProvider({ children }) {
-  const [events, setEvents] = useState([]);
-
-  const loadEvents = useCallback(() => {
-    try {
-      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-      setEvents(savedEvents);
-    } catch (error) {
-      console.error('Error loading events:', error);
-    }
-  }, []);
-
-  useEventSync(loadEvents);
-
-  useEffect(() => {
-    loadEvents();
-  }, [loadEvents]);
-
-  return (
-    <EventContext.Provider value={{ events, loadEvents }}>
-      {children}
-    </EventContext.Provider>
-  );
-}
-
-function useEvents() {
-  return useContext(EventContext);
-}
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -104,23 +50,15 @@ export default function App() {
                 }
               >
                 <Route index element={<DashboardHome />} />
-                
-                {/* Projects Management */}
                 <Route path="projects" element={<ContentEditor type="projects" />} />
                 <Route path="projects/new" element={<ContentEditor type="projects" mode="create" />} />
                 <Route path="projects/:id/edit" element={<ContentEditor type="projects" mode="edit" />} />
-                
-                {/* Events Management */}
                 <Route path="events" element={<ContentEditor type="events" />} />
                 <Route path="events/new" element={<ContentEditor type="events" mode="create" />} />
                 <Route path="events/:id/edit" element={<ContentEditor type="events" mode="edit" />} />
-                
-                {/* Content Management */}
                 <Route path="content" element={<ContentEditor type="content" />} />
                 <Route path="content/:section" element={<ContentEditor type="content" />} />
                 <Route path="content/new" element={<ContentEditor type="content" mode="create" />} />
-                
-                {/* Talent Pool Management */}
                 <Route path="talent-pool" element={<TalentPoolManager />} />
               </Route>
               
@@ -156,6 +94,3 @@ export default function App() {
     </EventProvider>
   );
 }
-
-// Export the useEvents hook for use in other components
-export { useEvents };

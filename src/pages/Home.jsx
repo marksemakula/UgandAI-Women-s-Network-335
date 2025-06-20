@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
+import { useEvents } from '../context/EventContext';
 import Hero from '../components/Hero';
 import FeatureStory from '../components/FeatureStory';
 import EventsCalendar from '../components/EventsCalendar';
@@ -22,68 +23,30 @@ const featuredStories = [
 ];
 
 export default function Home() {
-  const [upcomingEvents, setUpcomingEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { events, isLoading, error } = useEvents();
 
-  // Enhanced event loading function
-  const loadEvents = () => {
-    try {
-      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-      
-      // Process events to ensure proper date format
-      const processedEvents = savedEvents.map(event => ({
-        ...event,
-        date: event.date ? new Date(event.date).toISOString().split('T')[0] : null,
-        type: event.type || 'Event'
-      }));
-
-      // Filter upcoming events (include events without dates)
-      const filteredEvents = processedEvents.filter(event => {
+  // Filter and sort upcoming events
+  const upcomingEvents = useMemo(() => {
+    if (!events) return [];
+    
+    return events
+      .filter(event => {
         if (!event.date) return true;
-        const eventDate = new Date(event.date);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return eventDate >= today;
-      });
-
-      // Sort events by date (soonest first, undefined dates last)
-      filteredEvents.sort((a, b) => {
+        try {
+          const eventDate = new Date(event.date);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          return eventDate >= today;
+        } catch {
+          return false;
+        }
+      })
+      .sort((a, b) => {
         if (!a.date) return 1;
         if (!b.date) return -1;
         return new Date(a.date) - new Date(b.date);
       });
-
-      setUpcomingEvents(filteredEvents);
-    } catch (error) {
-      console.error('Error loading events:', error);
-      setUpcomingEvents([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // Initial load
-    loadEvents();
-
-    // Enhanced storage event listener
-    const handleStorageChange = (e) => {
-      if (e.key === 'uwiai_events') {
-        loadEvents();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    // Dispatch custom event when events are updated in the same tab
-    const handleCustomEvent = () => loadEvents();
-    window.addEventListener('eventsUpdated', handleCustomEvent);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('eventsUpdated', handleCustomEvent);
-    };
-  }, []);
+  }, [events]);
 
   return (
     <div className="min-h-screen">
@@ -112,7 +75,26 @@ export default function Home() {
         </div>
       </section>
       
-      {isLoading ? (
+      {error ? (
+        <div className="py-16 bg-white text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 max-w-4xl mx-auto"
+          >
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-700">{error}</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      ) : isLoading ? (
         <div className="py-16 flex justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
         </div>

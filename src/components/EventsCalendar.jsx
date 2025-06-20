@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { FiFilter, FiCalendar, FiMapPin, FiClock, FiExternalLink } from 'react-icons/fi';
-import { toast } from 'react-toastify';
 import EventCard from './EventCard';
 
 const eventTypes = [
@@ -13,90 +12,14 @@ const eventTypes = [
   { value: 'Ceremony', label: 'Ceremonies' }
 ];
 
-export default function EventsCalendar() {
+export default function EventsCalendar({ events = [] }) {
   const [activeFilter, setActiveFilter] = useState('All');
-  const [events, setEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const loadEvents = useCallback(() => {
-    setIsLoading(true);
-    try {
-      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-      
-      // Process and validate events
-      const processedEvents = savedEvents.map(event => ({
-        ...event,
-        id: event.id || Date.now().toString(),
-        title: event.title || 'Untitled Event',
-        date: event.date || null,
-        time: event.time || '',
-        location: event.location || 'Location TBD',
-        type: event.type || 'Event',
-        description: event.description || '',
-        googleFormLink: event.googleFormLink || '',
-        formResponsesLink: event.formResponsesLink || ''
-      }));
-
-      // Filter upcoming events
-      const upcomingEvents = processedEvents.filter(event => {
-        if (!event.date) return true;
-        try {
-          const eventDate = new Date(event.date);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          return eventDate >= today;
-        } catch (error) {
-          console.error('Invalid date format:', event.date);
-          return false;
-        }
-      });
-
-      // Sort events by date
-      upcomingEvents.sort((a, b) => {
-        if (!a.date) return 1;
-        if (!b.date) return -1;
-        return new Date(a.date) - new Date(b.date);
-      });
-
-      setEvents(upcomingEvents);
-    } catch (error) {
-      console.error('Error loading events:', error);
-      toast.error('Failed to load events');
-      setEvents([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Listen for event updates
-  useEffect(() => {
-    // Initial load
-    loadEvents();
-
-    // Custom event listener for same-tab updates
-    const handleCustomEvent = () => {
-      loadEvents();
-    };
-
-    // Storage event listener for cross-tab updates
-    const handleStorageChange = (e) => {
-      if (e.key === 'uwiai_events') {
-        loadEvents();
-      }
-    };
-
-    window.addEventListener('eventsUpdated', handleCustomEvent);
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('eventsUpdated', handleCustomEvent);
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [loadEvents]);
-
-  const filteredEvents = events.filter(event => 
-    activeFilter === 'All' || event.type === activeFilter
-  );
+  const filteredEvents = useMemo(() => {
+    return events.filter(event => 
+      activeFilter === 'All' || event.type === activeFilter
+    );
+  }, [events, activeFilter]);
 
   return (
     <section className="py-16 bg-gray-50" id="events">
@@ -130,11 +53,7 @@ export default function EventsCalendar() {
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
-          </div>
-        ) : filteredEvents.length === 0 ? (
+        {filteredEvents.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow">
             <h3 className="text-lg font-medium text-gray-700 mb-2">
               {activeFilter === 'All' 
