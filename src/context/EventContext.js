@@ -1,5 +1,5 @@
 // src/context/EventContext.js
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useEventSync } from '../hooks/useEventSync';
 
 const EventContext = createContext();
