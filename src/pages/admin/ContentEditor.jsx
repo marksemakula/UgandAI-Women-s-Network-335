@@ -254,13 +254,15 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedProjects, 'projects');
   };
 
-  const handleEventSubmit = async (e) => {
+    const handleEventSubmit = async (e) => {
     e.preventDefault();
-    if (!currentEvent.googleFormLink.includes('docs.google.com/forms')) {
+    
+    // Validate Google Form link if provided
+    if (currentEvent.googleFormLink && !currentEvent.googleFormLink.includes('docs.google.com/forms')) {
       toast.error('Please enter a valid Google Form link');
       return;
     }
-    
+
     try {
       setIsSaving(true);
       
@@ -268,7 +270,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
         ...currentEvent,
         id: mode === 'edit' ? currentEvent.id : Date.now().toString(),
         formResponsesLink: currentEvent.formResponsesLink || 
-          currentEvent.googleFormLink.replace('/viewform', '/viewanalytics'),
+          (currentEvent.googleFormLink ? currentEvent.googleFormLink.replace('/viewform', '/viewanalytics') : ''),
         lastUpdated: new Date().toISOString()
       };
       
