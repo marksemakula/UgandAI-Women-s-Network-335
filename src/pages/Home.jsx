@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useEvents } from '../context/EventContext';
+import { useEventSync } from '../hooks/useEventSync';
 import Hero from '../components/Hero';
 import FeatureStory from '../components/FeatureStory';
 import EventsCalendar from '../components/EventsCalendar';
@@ -23,7 +24,13 @@ const featuredStories = [
 ];
 
 export default function Home() {
-  const { events, isLoading, error } = useEvents();
+  const { events, isLoading, error, loadEvents } = useEvents();
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  useEventSync(loadEvents);
 
   // Filter and sort upcoming events
     const upcomingEvents = useMemo(() => {

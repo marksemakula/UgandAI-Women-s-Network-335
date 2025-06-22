@@ -55,11 +55,14 @@ export function EventProvider({ children }) {
       localStorage.setItem('uwiai_events', JSON.stringify(validatedEvents));
       setEvents(validatedEvents);
       
-      // Dispatch both custom event and storage event for broader compatibility
+      // Dispatch events with consistent naming
       window.dispatchEvent(new CustomEvent('uwiai_events_updated'));
       window.dispatchEvent(new StorageEvent('storage', {
         key: 'uwiai_events',
-        newValue: JSON.stringify(validatedEvents)
+        newValue: JSON.stringify(validatedEvents),
+        oldValue: localStorage.getItem('uwiai_events'),
+        storageArea: localStorage,
+        url: window.location.href
       }));
       
       return validatedEvents;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ProjectGallery from '../components/ProjectGallery';
 import { motion } from 'framer-motion';
 
@@ -33,44 +33,39 @@ export default function Projects() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const loadProjects = useCallback(() => {
+    try {
+      const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
+      const savedResearch = JSON.parse(localStorage.getItem('uwiai_research')) || [];
+      
+      const combinedContent = [...savedProjects, ...savedResearch];
+      
+      const validatedContent = combinedContent.map(project => ({
+        ...project,
+        id: project.id || Date.now().toString(),
+        title: project.title || 'Untitled Project',
+        creator: project.creator || 'Unknown Creator',
+        description: project.description || 'No description available',
+        tags: project.tags || [],
+        status: project.status || 'In Progress',
+        links: project.links || {},
+        category: project.category || 'Project'
+      }));
+
+      setContent(validatedContent.length > 0 ? validatedContent : defaultContent);
+      setError(null);
+    } catch (err) {
+      console.error('Error loading projects:', err);
+      setError('Failed to load projects. Showing default content.');
+      setContent(defaultContent);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const loadProjects = () => {
-      try {
-        // Try to load projects from localStorage
-        const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
-        const savedResearch = JSON.parse(localStorage.getItem('uwiai_research')) || [];
-        
-        // Combine and validate projects
-        const combinedContent = [...savedProjects, ...savedResearch];
-        
-        // Validate each project has required fields
-        const validatedContent = combinedContent.map(project => ({
-          ...project,
-          id: project.id || Date.now().toString(),
-          title: project.title || 'Untitled Project',
-          creator: project.creator || 'Unknown Creator',
-          description: project.description || 'No description available',
-          tags: project.tags || [],
-          status: project.status || 'In Progress',
-          links: project.links || {},
-          category: project.category || 'Project'
-        }));
-
-        // Use default content if no projects found in localStorage
-        setContent(validatedContent.length > 0 ? validatedContent : defaultContent);
-        setError(null);
-      } catch (err) {
-        console.error('Error loading projects:', err);
-        setError('Failed to load projects. Showing default content.');
-        setContent(defaultContent);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadProjects();
 
-    // Listen for storage changes from CMS
     const handleStorageChange = (e) => {
       if (e.key === 'uwiai_projects' || e.key === 'uwiai_research') {
         loadProjects();
@@ -81,7 +76,7 @@ export default function Projects() {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [loadProjects]);
 
   return (
     <div className="min-h-screen bg-gray-50">

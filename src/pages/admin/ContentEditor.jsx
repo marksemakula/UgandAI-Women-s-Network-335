@@ -255,10 +255,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedProjects, 'projects');
   };
 
-      const handleEventSubmit = async (e) => {
+        const handleEventSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate Google Form link if provided
     if (currentEvent.googleFormLink && !currentEvent.googleFormLink.includes('docs.google.com/forms')) {
       toast.error('Please enter a valid Google Form link');
       return;
