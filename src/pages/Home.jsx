@@ -26,7 +26,7 @@ export default function Home() {
   const { events, isLoading, error } = useEvents();
 
   // Filter and sort upcoming events
-  const upcomingEvents = useMemo(() => {
+    const upcomingEvents = useMemo(() => {
     if (!events || isLoading) return [];
     
     const today = new Date();

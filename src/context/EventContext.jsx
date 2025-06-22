@@ -1,4 +1,4 @@
-// src/context/EventContext.js
+// src/context/EventContext.jsx
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const EventContext = createContext();

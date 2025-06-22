@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { 
@@ -254,7 +255,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedProjects, 'projects');
   };
 
-    const handleEventSubmit = async (e) => {
+      const handleEventSubmit = async (e) => {
     e.preventDefault();
     
     // Validate Google Form link if provided
