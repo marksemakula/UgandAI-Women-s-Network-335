@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { 
   FiUsers, 
@@ -11,8 +11,11 @@ import {
   FiPlusCircle,
   FiUserPlus,
   FiUsers as FiTalent,
-  FiHome
+  FiHome,
+  FiRefreshCw
 } from 'react-icons/fi';
+import { useEvents } from '@context/EventContext';
+import { toast } from 'react-toastify';
 
 export default function Dashboard() {
   const location = useLocation();
@@ -29,7 +32,31 @@ export default function Dashboard() {
     contentSections: 0
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
+  const { forceRefresh } = useEvents();
+
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
+      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
+      const contentSections = JSON.parse(localStorage.getItem('uwiai_content')) || [];
+      
+      setAdminName('Admin User');
+      setStats({
+        members: 124,
+        projects: savedProjects.length,
+        events: savedEvents.length,
+        contentSections: contentSections.length
+      });
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('uwiai_admin_token');
@@ -38,33 +65,40 @@ export default function Dashboard() {
       return;
     }
 
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
-        const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-        const contentSections = JSON.parse(localStorage.getItem('uwiai_content')) || [];
-        
-        setAdminName('Admin User');
-        setStats({
-          members: 124,
-          projects: savedProjects.length,
-          events: savedEvents.length,
-          contentSections: contentSections.length
-        });
-      } catch (error) {
-        console.error('Error loading dashboard data:', error);
-      } finally {
-        setIsLoading(false);
-      }
+    fetchData();
+
+    // Event listeners for updates
+    const handleEventUpdate = () => {
+      fetchData();
     };
 
-    fetchData();
-  }, [navigate]);
+    window.addEventListener('uwiai_events_updated', handleEventUpdate);
+    window.addEventListener('uwiai_events_forced_refresh', handleEventUpdate);
+
+    return () => {
+      window.removeEventListener('uwiai_events_updated', handleEventUpdate);
+      window.removeEventListener('uwiai_events_forced_refresh', handleEventUpdate);
+    };
+  }, [navigate, fetchData]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await forceRefresh();
+      await fetchData();
+      toast.success('Data refreshed successfully');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('uwiai_admin_token');
     navigate('/admin/login');
+    toast.success('Logged out successfully');
   };
 
   const menuItems = [
@@ -118,6 +152,14 @@ export default function Dashboard() {
         <div className="p-4 border-b border-gray-200">
           <h2 className="text-xl font-bold text-primary">UWIAI CMS</h2>
           <p className="text-sm text-gray-600 mt-1">Welcome, {adminName}</p>
+          <button 
+            onClick={handleRefresh}
+            className="mt-2 flex items-center text-sm text-gray-500 hover:text-accent"
+            disabled={isRefreshing}
+          >
+            <FiRefreshCw className={`mr-1 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+          </button>
         </div>
         
         <nav className="p-4 flex-1">
@@ -135,7 +177,6 @@ export default function Dashboard() {
                   {item.label}
                 </Link>
                 
-                {/* Sub-items for content section */}
                 {item.path === 'content' && isContentSection && (
                   <ul className="ml-8 mt-2 space-y-1">
                     {item.subItems.map((subItem) => (

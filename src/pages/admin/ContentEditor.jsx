@@ -20,20 +20,22 @@ import {
   FiTag,
   FiUpload,
   FiVideo,
-  FiFileText
+  FiFileText,
+  FiRefreshCw
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
-import { useEvents } from '../context/EventContext';
+import { useEvents } from '@context/EventContext';
 
 export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { events, updateEvents } = useEvents();
+  const { events, updateEvents, forceRefresh } = useEvents();
   
   // State initialization
   const [projects, setProjects] = useState([]);
   const [contentSections, setContentSections] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const [currentProject, setCurrentProject] = useState({
     id: '',
@@ -56,7 +58,8 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     description: '',
     type: 'Training',
     googleFormLink: '',
-    formResponsesLink: ''
+    formResponsesLink: '',
+    lastUpdated: new Date().toISOString()
   });
   
   const [currentContent, setCurrentContent] = useState({
@@ -70,7 +73,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Enhanced data loader
+  // Enhanced data loader with proper event handling
   const loadData = useCallback(() => {
     try {
       const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
@@ -123,7 +126,8 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
         events: () => setCurrentEvent({
           id: '', title: '', date: '', time: '', location: '',
           description: '', type: 'Training',
-          googleFormLink: '', formResponsesLink: ''
+          googleFormLink: '', formResponsesLink: '',
+          lastUpdated: new Date().toISOString()
         }),
         content: () => setCurrentContent({
           id: '', section: '', title: '', content: '',
@@ -135,12 +139,27 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }
   }, [type, mode]);
 
-  // Enhanced save function with synchronization
+  // Enhanced save function with proper synchronization
   const saveData = useCallback(async (data, dataType) => {
     setIsSaving(true);
     try {
       if (dataType === 'events') {
-        await updateEvents(data);
+        // Ensure all events have required fields
+        const validatedEvents = data.map(event => ({
+          id: event.id || Date.now().toString(),
+          title: event.title || 'Untitled Event',
+          date: event.date || null,
+          time: event.time || '',
+          location: event.location || 'Location TBD',
+          type: event.type || 'Event',
+          description: event.description || '',
+          googleFormLink: event.googleFormLink || '',
+          formResponsesLink: event.formResponsesLink || 
+            (event.googleFormLink ? event.googleFormLink.replace('/viewform', '/viewanalytics') : ''),
+          lastUpdated: new Date().toISOString()
+        }));
+        
+        await updateEvents(validatedEvents);
       } else {
         localStorage.setItem(`uwiai_${dataType}`, JSON.stringify(data));
         window.dispatchEvent(new CustomEvent('contentUpdated', {
@@ -157,6 +176,19 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       setIsSaving(false);
     }
   }, [navigate, updateEvents]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await forceRefresh();
+      loadData();
+      toast.success('Data refreshed successfully');
+    } catch (error) {
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Project file handling
   const handleFileUpload = (fileType, e) => {
@@ -222,25 +254,37 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedProjects, 'projects');
   };
 
-  const handleEventSubmit = (e) => {
+  const handleEventSubmit = async (e) => {
     e.preventDefault();
     if (!currentEvent.googleFormLink.includes('docs.google.com/forms')) {
       toast.error('Please enter a valid Google Form link');
       return;
     }
     
-    const newEvent = {
-      ...currentEvent,
-      id: mode === 'edit' ? currentEvent.id : Date.now().toString(),
-      formResponsesLink: currentEvent.formResponsesLink || 
-        currentEvent.googleFormLink.replace('/viewform', '/viewanalytics')
-    };
-    
-    const updatedEvents = mode === 'edit'
-      ? events.map(e => e.id === newEvent.id ? newEvent : e)
-      : [...events, newEvent];
-    
-    saveData(updatedEvents, 'events');
+    try {
+      setIsSaving(true);
+      
+      const newEvent = {
+        ...currentEvent,
+        id: mode === 'edit' ? currentEvent.id : Date.now().toString(),
+        formResponsesLink: currentEvent.formResponsesLink || 
+          currentEvent.googleFormLink.replace('/viewform', '/viewanalytics'),
+        lastUpdated: new Date().toISOString()
+      };
+      
+      const updatedEvents = mode === 'edit'
+        ? events.map(e => e.id === newEvent.id ? newEvent : e)
+        : [...events, newEvent];
+      
+      await updateEvents(updatedEvents);
+      toast.success('Event saved successfully!');
+      navigate('/admin/events');
+    } catch (error) {
+      console.error('Error saving event:', error);
+      toast.error('Failed to save event');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleContentSubmit = (e) => {
@@ -258,15 +302,34 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedContent, 'content');
   };
 
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+
+    try {
+      setIsSaving(true);
+      
       if (type === 'projects') {
-        saveData(projects.filter(p => p.id !== id), 'projects');
+        const updatedProjects = projects.filter(p => p.id !== id);
+        localStorage.setItem('uwiai_projects', JSON.stringify(updatedProjects));
+        setProjects(updatedProjects);
+        toast.success('Project deleted successfully');
       } else if (type === 'events') {
-        saveData(events.filter(e => e.id !== id), 'events');
+        const updatedEvents = events.filter(e => e.id !== id);
+        await updateEvents(updatedEvents);
+        toast.success('Event deleted successfully');
       } else if (type === 'content') {
-        saveData(contentSections.filter(c => c.id !== id), 'content');
+        const updatedContent = contentSections.filter(c => c.id !== id);
+        localStorage.setItem('uwiai_content', JSON.stringify(updatedContent));
+        setContentSections(updatedContent);
+        toast.success('Content deleted successfully');
       }
+      
+      navigate(`/admin/${type}`);
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      toast.error('Failed to delete item');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -593,13 +656,23 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-primary">Events Management</h1>
-          <button
-            onClick={() => navigate('/admin/events/new')}
-            className="px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-light transition flex items-center"
-          >
-            <FiPlus className="mr-2" />
-            Add Event
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleRefresh}
+              className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded flex items-center"
+              disabled={isRefreshing}
+            >
+              <FiRefreshCw className={`mr-1 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+            <button
+              onClick={() => navigate('/admin/events/new')}
+              className="px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-light transition flex items-center"
+            >
+              <FiPlus className="mr-2" />
+              Add Event
+            </button>
+          </div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">

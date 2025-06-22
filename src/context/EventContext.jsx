@@ -12,8 +12,7 @@ export function EventProvider({ children }) {
     setIsLoading(true);
     try {
       const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-      // Validate and normalize event data
-      const processedEvents = savedEvents.map(event => ({
+      const validatedEvents = savedEvents.map(event => ({
         id: event.id || Date.now().toString(),
         title: event.title || 'Untitled Event',
         date: event.date || null,
@@ -22,9 +21,11 @@ export function EventProvider({ children }) {
         type: event.type || 'Event',
         description: event.description || '',
         googleFormLink: event.googleFormLink || '',
-        formResponsesLink: event.formResponsesLink || ''
+        formResponsesLink: event.formResponsesLink || 
+          (event.googleFormLink ? event.googleFormLink.replace('/viewform', '/viewanalytics') : ''),
+        lastUpdated: event.lastUpdated || new Date().toISOString()
       }));
-      setEvents(processedEvents);
+      setEvents(validatedEvents);
       setError(null);
     } catch (error) {
       console.error('Error loading events:', error);
@@ -37,7 +38,7 @@ export function EventProvider({ children }) {
 
   const updateEvents = useCallback((newEvents) => {
     try {
-      const processedEvents = newEvents.map(event => ({
+      const validatedEvents = newEvents.map(event => ({
         id: event.id || Date.now().toString(),
         title: event.title || 'Untitled Event',
         date: event.date || null,
@@ -46,48 +47,58 @@ export function EventProvider({ children }) {
         type: event.type || 'Event',
         description: event.description || '',
         googleFormLink: event.googleFormLink || '',
-        formResponsesLink: event.formResponsesLink || ''
+        formResponsesLink: event.formResponsesLink || 
+          (event.googleFormLink ? event.googleFormLink.replace('/viewform', '/viewanalytics') : ''),
+        lastUpdated: new Date().toISOString()
       }));
       
-      localStorage.setItem('uwiai_events', JSON.stringify(processedEvents));
-      setEvents(processedEvents);
+      localStorage.setItem('uwiai_events', JSON.stringify(validatedEvents));
+      setEvents(validatedEvents);
       
-      // Trigger updates across tabs and components
+      // Dispatch both custom event and storage event for broader compatibility
       window.dispatchEvent(new CustomEvent('uwiai_events_updated'));
       window.dispatchEvent(new StorageEvent('storage', {
         key: 'uwiai_events',
-        newValue: JSON.stringify(processedEvents),
-        oldValue: localStorage.getItem('uwiai_events'),
-        storageArea: localStorage,
-        url: window.location.href
+        newValue: JSON.stringify(validatedEvents)
       }));
+      
+      return validatedEvents;
     } catch (error) {
       console.error('Error updating events:', error);
       throw error;
     }
   }, []);
 
+  const deleteEvent = useCallback((eventId) => {
+    const updatedEvents = events.filter(event => event.id !== eventId);
+    return updateEvents(updatedEvents);
+  }, [events, updateEvents]);
+
+  const forceRefresh = useCallback(() => {
+    loadEvents();
+    window.dispatchEvent(new CustomEvent('uwiai_events_forced_refresh'));
+  }, [loadEvents]);
+
   useEffect(() => {
     // Initial load
     loadEvents();
 
-    // Set up event listeners
     const handleStorageChange = (e) => {
       if (e.key === 'uwiai_events') {
         loadEvents();
       }
     };
 
-    const handleCustomEvent = () => {
-      loadEvents();
-    };
+    const handleCustomEvent = () => loadEvents();
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('uwiai_events_updated', handleCustomEvent);
+    window.addEventListener('uwiai_events_forced_refresh', handleCustomEvent);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('uwiai_events_updated', handleCustomEvent);
+      window.removeEventListener('uwiai_events_forced_refresh', handleCustomEvent);
     };
   }, [loadEvents]);
 
@@ -96,8 +107,10 @@ export function EventProvider({ children }) {
     isLoading,
     error,
     loadEvents,
-    updateEvents
-  }), [events, isLoading, error, loadEvents, updateEvents]);
+    updateEvents,
+    deleteEvent,
+    forceRefresh
+  }), [events, isLoading, error, loadEvents, updateEvents, deleteEvent, forceRefresh]);
 
   return (
     <EventContext.Provider value={value}>

@@ -4,15 +4,16 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/', // Must be forward slash for Netlify
+  base: '/',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      '@context': path.resolve(__dirname, './src/context')
     }
   },
   build: {
     outDir: 'dist',
-    sourcemap: false, // Disable for production
+    sourcemap: false,
     emptyOutDir: true,
     rollupOptions: {
       output: {
