@@ -12,7 +12,7 @@ export default function TalentPoolManager() {
       publicLink: 'uwaitalent/sarah-nakato',
       expertise: 'Machine Learning, Healthcare AI',
       status: 'approved'
-    },
+    }
     // More sample members...
   ]);
 
@@ -93,8 +93,8 @@ export default function TalentPoolManager() {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                     ${member.status === 'approved' ? 'bg-green-100 text-green-800' : 
-                      member.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-red-100 text-red-800'}`}>
+                member.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                  'bg-red-100 text-red-800'}`}>
                     {member.status}
                   </span>
                 </td>

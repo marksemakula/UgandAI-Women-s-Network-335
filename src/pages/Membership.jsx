@@ -26,16 +26,16 @@ export default function Membership() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {[
             {
-              title: "Network",
-              description: "Connect with like-minded professionals and mentors in the AI field"
+              title: 'Network',
+              description: 'Connect with like-minded professionals and mentors in the AI field'
             },
             {
-              title: "Learn",
-              description: "Access exclusive workshops, training sessions, and resources"
+              title: 'Learn',
+              description: 'Access exclusive workshops, training sessions, and resources'
             },
             {
-              title: "Grow",
-              description: "Develop your skills and advance your career in AI"
+              title: 'Grow',
+              description: 'Develop your skills and advance your career in AI'
             }
           ].map((benefit, index) => (
             <motion.div

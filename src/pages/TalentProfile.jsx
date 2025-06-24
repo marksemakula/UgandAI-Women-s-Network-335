@@ -21,7 +21,7 @@ export default function TalentProfile() {
       {
         title: 'AI-Powered Malaria Detection',
         description: 'Developed a mobile app that uses computer vision to detect malaria parasites in blood samples.'
-      },
+      }
       // More projects...
     ]
   };

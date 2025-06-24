@@ -8,35 +8,35 @@ const formFields = [
     label: 'Full Name',
     type: 'text',
     icon: FiUser,
-    required: true,
+    required: true
   },
   {
     name: 'email',
     label: 'Email Address',
     type: 'email',
     icon: FiMail,
-    required: true,
+    required: true
   },
   {
     name: 'phone',
     label: 'Phone Number',
     type: 'tel',
     icon: FiPhone,
-    required: true,
+    required: true
   },
   {
     name: 'education',
     label: 'Educational Background',
     type: 'text',
     icon: FiBook,
-    required: true,
+    required: true
   },
   {
     name: 'occupation',
     label: 'Current Occupation',
     type: 'text',
     icon: FiBriefcase,
-    required: true,
+    required: true
   }
 ];
 

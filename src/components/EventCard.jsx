@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { FiCalendar, FiMapPin, FiClock, FiExternalLink, FiAlertCircle } from 'react-icons/fi';
+import { FiMapPin, FiClock, FiExternalLink } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 
 export default function EventCard({ event }) {
   const { 
@@ -26,7 +27,9 @@ export default function EventCard({ event }) {
       isPastEvent = eventDate < new Date();
     }
   } catch (error) {
-    console.error('Invalid date format:', date);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Invalid date format:', date);
+    }
   }
 
   const handleRegisterClick = (e) => {
@@ -47,7 +50,7 @@ export default function EventCard({ event }) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin: '-100px' }}
       transition={{ duration: 0.5 }}
       className={`bg-white rounded-lg shadow-md overflow-hidden border-l-4 ${
         isPastEvent ? 'border-gray-300' : 'border-accent'
@@ -79,7 +82,7 @@ export default function EventCard({ event }) {
         
         <div className="space-y-2 text-gray-600 mb-4">
           <div className="flex items-center">
-            <FiCalendar className="mr-2 min-w-[16px]" />
+            <span className="w-4 mr-2">📅</span>
             <span>{formattedDate}</span>
           </div>
           {time && (
@@ -139,3 +142,16 @@ export default function EventCard({ event }) {
     </motion.div>
   );
 }
+
+EventCard.propTypes = {
+  event: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    date: PropTypes.string,
+    location: PropTypes.string,
+    time: PropTypes.string,
+    description: PropTypes.string,
+    type: PropTypes.string.isRequired,
+    googleFormLink: PropTypes.string,
+    formResponsesLink: PropTypes.string
+  }).isRequired
+};

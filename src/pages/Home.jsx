@@ -8,18 +8,18 @@ import EventsCalendar from '../components/EventsCalendar';
 
 const featuredStories = [
   {
-    title: "Breaking Barriers in AI Research",
-    author: "Viola Nuwaha",
-    date: "March 15, 2024",
-    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-    excerpt: "How a team of Ugandan women researchers are revolutionizing healthcare with AI, in collaboration with communities like inzozi.co and other women-led AI initiatives."
+    title: 'Breaking Barriers in AI Research',
+    author: 'Viola Nuwaha',
+    date: 'March 15, 2024',
+    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    excerpt: 'How a team of Ugandan women researchers are revolutionizing healthcare with AI, in collaboration with communities like inzozi.co and other women-led AI initiatives.'
   },
   {
-    title: "African Women in AI: Pivots, Perseverances and Pleasures",
-    author: "Sarah Nalubega",
-    date: "August 01, 2022",
-    image: "/images/vnuwahagermany.jpeg",
-    excerpt: "Moved by the absence of data and information on this topic, we decided that this was a project worth embarking on."
+    title: 'African Women in AI: Pivots, Perseverances and Pleasures',
+    author: 'Sarah Nalubega',
+    date: 'August 01, 2022',
+    image: '/images/vnuwahagermany.jpeg',
+    excerpt: 'Moved by the absence of data and information on this topic, we decided that this was a project worth embarking on.'
   }
 ];
 
@@ -33,7 +33,7 @@ export default function Home() {
   useEventSync(loadEvents);
 
   // Filter and sort upcoming events
-    const upcomingEvents = useMemo(() => {
+  const upcomingEvents = useMemo(() => {
     if (!events || isLoading) return [];
     
     const today = new Date();

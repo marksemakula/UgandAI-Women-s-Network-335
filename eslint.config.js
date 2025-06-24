@@ -3,6 +3,7 @@ import globals from 'globals';
 import reactRecommended from 'eslint-plugin-react/configs/recommended.js';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
   // Basic ignores
@@ -77,11 +78,11 @@ export default [
     }
   },
   
-  // TypeScript support (optional)
+  // TypeScript support (updated to use ES modules import)
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      parser: require('@typescript-eslint/parser'),
+      parser: tsParser,
       parserOptions: {
         project: './tsconfig.json'
       }

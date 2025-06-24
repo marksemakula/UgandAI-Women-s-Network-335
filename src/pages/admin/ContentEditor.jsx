@@ -255,7 +255,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedProjects, 'projects');
   };
 
-        const handleEventSubmit = async (e) => {
+  const handleEventSubmit = async (e) => {
     e.preventDefault();
     
     if (currentEvent.googleFormLink && !currentEvent.googleFormLink.includes('docs.google.com/forms')) {
@@ -447,7 +447,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               <input
                 type="text"
                 value={currentProject.title}
-                onChange={(e) => setCurrentProject({...currentProject, title: e.target.value})}
+                onChange={(e) => setCurrentProject({ ...currentProject, title: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
@@ -457,7 +457,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               <input
                 type="text"
                 value={currentProject.creator}
-                onChange={(e) => setCurrentProject({...currentProject, creator: e.target.value})}
+                onChange={(e) => setCurrentProject({ ...currentProject, creator: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
@@ -468,7 +468,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Description*</label>
             <textarea
               value={currentProject.description}
-              onChange={(e) => setCurrentProject({...currentProject, description: e.target.value})}
+              onChange={(e) => setCurrentProject({ ...currentProject, description: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded min-h-[100px]"
               required
             />
@@ -738,7 +738,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <input
               type="text"
               value={currentEvent.title}
-              onChange={(e) => setCurrentEvent({...currentEvent, title: e.target.value})}
+              onChange={(e) => setCurrentEvent({ ...currentEvent, title: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded"
               required
             />
@@ -750,7 +750,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               <input
                 type="date"
                 value={currentEvent.date}
-                onChange={(e) => setCurrentEvent({...currentEvent, date: e.target.value})}
+                onChange={(e) => setCurrentEvent({ ...currentEvent, date: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
@@ -760,7 +760,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               <input
                 type="time"
                 value={currentEvent.time}
-                onChange={(e) => setCurrentEvent({...currentEvent, time: e.target.value})}
+                onChange={(e) => setCurrentEvent({ ...currentEvent, time: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
@@ -769,7 +769,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
               <select
                 value={currentEvent.type}
-                onChange={(e) => setCurrentEvent({...currentEvent, type: e.target.value})}
+                onChange={(e) => setCurrentEvent({ ...currentEvent, type: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               >
                 <option value="Training">Training</option>
@@ -784,7 +784,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <input
               type="text"
               value={currentEvent.location}
-              onChange={(e) => setCurrentEvent({...currentEvent, location: e.target.value})}
+              onChange={(e) => setCurrentEvent({ ...currentEvent, location: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded"
               required
             />
@@ -794,7 +794,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Description*</label>
             <textarea
               value={currentEvent.description}
-              onChange={(e) => setCurrentEvent({...currentEvent, description: e.target.value})}
+              onChange={(e) => setCurrentEvent({ ...currentEvent, description: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded min-h-[100px]"
               required
             />
@@ -805,7 +805,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <input
               type="url"
               value={currentEvent.googleFormLink}
-              onChange={(e) => setCurrentEvent({...currentEvent, googleFormLink: e.target.value})}
+              onChange={(e) => setCurrentEvent({ ...currentEvent, googleFormLink: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded"
               placeholder="https://docs.google.com/forms/..."
               required
@@ -909,7 +909,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               <label className="block text-sm font-medium text-gray-700 mb-1">Section*</label>
               <select
                 value={currentContent.section}
-                onChange={(e) => setCurrentContent({...currentContent, section: e.target.value})}
+                onChange={(e) => setCurrentContent({ ...currentContent, section: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               >
@@ -927,7 +927,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               <input
                 type="text"
                 value={currentContent.title}
-                onChange={(e) => setCurrentContent({...currentContent, title: e.target.value})}
+                onChange={(e) => setCurrentContent({ ...currentContent, title: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
                 required
               />
@@ -938,7 +938,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Content*</label>
             <textarea
               value={currentContent.content}
-              onChange={(e) => setCurrentContent({...currentContent, content: e.target.value})}
+              onChange={(e) => setCurrentContent({ ...currentContent, content: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded min-h-[200px]"
               required
             />
