@@ -51,15 +51,19 @@ EventsCalendar.propTypes = {
 export default function Home() {
   const { events, isLoading, error, loadEvents } = useEvents();
 
-  // Wrap loadEvents in useCallback to prevent unnecessary recreations
+  // Memoized callback for loading events
   const loadEventsCallback = useCallback(() => {
-    loadEvents();
+    loadEvents().catch(err => {
+      console.error('Error loading events:', err);
+    });
   }, [loadEvents]);
 
+  // Load events on component mount
   useEffect(() => {
     loadEventsCallback();
-  }, [loadEventsCallback]); // Now using the memoized callback
+  }, [loadEventsCallback]);
 
+  // Set up event synchronization
   useEventSync(loadEventsCallback);
 
   // Filter and sort upcoming events
@@ -75,20 +79,26 @@ export default function Home() {
         try {
           const eventDate = new Date(event.date);
           return eventDate >= today;
-        } catch {
+        } catch (err) {
+          console.error('Error parsing event date:', err);
           return false;
         }
       })
       .sort((a, b) => {
-        if (!a.date && !b.date) return 0;
-        if (!a.date) return 1;
-        if (!b.date) return -1;
-        return new Date(a.date) - new Date(b.date);
+        try {
+          const dateA = a.date ? new Date(a.date) : new Date(0);
+          const dateB = b.date ? new Date(b.date) : new Date(0);
+          return dateA - dateB;
+        } catch (err) {
+          console.error('Error sorting events:', err);
+          return 0;
+        }
       });
   }, [events, isLoading]);
 
   return (
     <div className="min-h-screen">
+      {/* Hero Section */}
       <Hero />
       
       {/* Featured Stories Section */}
@@ -137,13 +147,26 @@ export default function Home() {
             >
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  <svg 
+                    className="h-5 w-5 text-yellow-400" 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path 
+                      fillRule="evenodd" 
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" 
+                      clipRule="evenodd" 
+                    />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm text-yellow-700">{error}</p>
-                  <p className="text-sm text-yellow-600 mt-1">Please try refreshing the page or contact support if the problem persists.</p>
+                  <p className="text-sm text-yellow-700">
+                    {error}
+                  </p>
+                  <p className="text-sm text-yellow-600 mt-1">
+                    Please try refreshing the page or contact support if the problem persists.
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -153,13 +176,18 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+              <div 
+                className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"
+                aria-hidden="true"
+              />
               <span className="sr-only">Loading events...</span>
             </motion.div>
           ) : (
             <>
               <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-primary mb-4">Upcoming Events</h2>
+                <h2 className="text-3xl font-bold text-primary mb-4">
+                  Upcoming Events
+                </h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
                   Join our community for these exciting upcoming events.
                 </p>
@@ -173,7 +201,6 @@ export default function Home() {
   );
 }
 
-// Add prop types for the Home component if it receives any props
 Home.propTypes = {
   // Add any props your Home component might receive
 };
