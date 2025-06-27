@@ -339,9 +339,8 @@ export default function MentorshipForm() {
   );
 }
 
-// Add prop validation if this component receives any props
 MentorshipForm.propTypes = {
-  // Example if props were being passed:
+  // Add any props your component might receive in the future
   // onSubmit: PropTypes.func,
   // initialData: PropTypes.object,
 };
