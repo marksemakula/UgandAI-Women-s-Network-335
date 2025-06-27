@@ -1,26 +1,19 @@
-
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { 
   FiSave, 
   FiTrash2, 
-  FiEdit, 
-  FiExternalLink, 
-  FiCopy, 
-  FiFile, 
-  FiGithub, 
-  FiBook,
+  FiEdit,
   FiArrowLeft,
   FiPlus,
   FiX,
   FiCalendar,
   FiMapPin,
   FiType,
-  FiUser,
-  FiLink,
-  FiTag,
   FiUpload,
   FiVideo,
+  FiFile,
   FiFileText,
   FiRefreshCw
 } from 'react-icons/fi';
@@ -29,7 +22,6 @@ import { useEvents } from '@context/EventContext';
 
 export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const { id } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
   const { events, updateEvents, forceRefresh } = useEvents();
   
@@ -74,7 +66,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Enhanced data loader with proper event handling
   const loadData = useCallback(() => {
     try {
       const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
@@ -96,7 +87,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
         }
       }
     } catch (error) {
-      console.error('Error loading data:', error);
       toast.error('Failed to load data. Please refresh the page.');
     }
   }, [type, mode, id, events]);
@@ -114,7 +104,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [loadData, type]);
 
-  // Reset form for new items
   useEffect(() => {
     if (mode === 'create') {
       const resetStates = {
@@ -140,12 +129,10 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }
   }, [type, mode]);
 
-  // Enhanced save function with proper synchronization
   const saveData = useCallback(async (data, dataType) => {
     setIsSaving(true);
     try {
       if (dataType === 'events') {
-        // Ensure all events have required fields
         const validatedEvents = data.map(event => ({
           id: event.id || Date.now().toString(),
           title: event.title || 'Untitled Event',
@@ -171,7 +158,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       toast.success(`${dataType.charAt(0).toUpperCase() + dataType.slice(1)} saved successfully!`);
       navigate(`/admin/${dataType}`);
     } catch (error) {
-      console.error('Error saving data:', error);
       toast.error('Failed to save data. Please try again.');
     } finally {
       setIsSaving(false);
@@ -191,7 +177,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }
   };
 
-  // Project file handling
   const handleFileUpload = (fileType, e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -235,7 +220,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     toast.info(`${fileType.toUpperCase()} removed`);
   };
 
-  // Form submission handlers
   const handleProjectSubmit = (e) => {
     e.preventDefault();
     const newProject = {
@@ -282,7 +266,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       toast.success('Event saved successfully!');
       navigate('/admin/events');
     } catch (error) {
-      console.error('Error saving event:', error);
       toast.error('Failed to save event');
     } finally {
       setIsSaving(false);
@@ -328,14 +311,12 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       
       navigate(`/admin/${type}`);
     } catch (error) {
-      console.error('Error deleting item:', error);
       toast.error('Failed to delete item');
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Tag management
   const addTag = () => {
     if (newTag && !currentProject.tags.includes(newTag)) {
       setCurrentProject(prev => ({
@@ -353,7 +334,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }));
   };
 
-  // Render methods for each content type
   if (type === 'projects') {
     return mode === 'list' ? (
       <div className="p-8">
@@ -987,3 +967,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     </div>
   );
 }
+
+ContentEditor.propTypes = {
+  type: PropTypes.oneOf(['projects', 'events', 'content']),
+  mode: PropTypes.oneOf(['list', 'create', 'edit'])
+};
+
+ContentEditor.defaultProps = {
+  type: 'projects',
+  mode: 'list'
+};
