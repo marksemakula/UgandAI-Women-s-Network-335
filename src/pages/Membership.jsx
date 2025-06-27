@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 import RegistrationForm from '../components/RegistrationForm';
 
 export default function Membership() {
@@ -19,7 +20,7 @@ export default function Membership() {
             transition={{ delay: 0.2 }}
             className="text-xl text-gray-600 max-w-2xl mx-auto"
           >
-            Be part of Uganda's growing community of women in AI. Connect, learn, and grow with fellow innovators.
+            Be part of Uganda&apos;s growing community of women in AI. Connect, learn, and grow with fellow innovators.
           </motion.p>
         </div>
 
@@ -56,3 +57,9 @@ export default function Membership() {
     </div>
   );
 }
+
+// Add PropTypes validation if this component receives any props in the future
+Membership.propTypes = {
+  // Example if props are added later:
+  // someProp: PropTypes.string
+};
