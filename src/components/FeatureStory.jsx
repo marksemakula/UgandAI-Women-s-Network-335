@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 
 export default function FeatureStory({ story }) {
   const { title, author, date, image, excerpt } = story;
@@ -30,3 +31,13 @@ export default function FeatureStory({ story }) {
     </motion.div>
   );
 }
+
+FeatureStory.propTypes = {
+  story: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    excerpt: PropTypes.string.isRequired
+  }).isRequired
+};
