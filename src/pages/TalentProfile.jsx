@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiLinkedin, FiTwitter, FiMail, FiPhone, FiGlobe } from 'react-icons/fi';
+import { FiLinkedin, FiMail, FiPhone, FiGlobe } from 'react-icons/fi';
+import PropTypes from 'prop-types';
 
 export default function TalentProfile() {
   const { username } = useParams();
@@ -117,3 +118,9 @@ export default function TalentProfile() {
     </div>
   );
 }
+
+// Add PropTypes validation if this component receives props
+TalentProfile.propTypes = {
+  // Example if props were being passed:
+  // username: PropTypes.string
+};
