@@ -1,6 +1,7 @@
 import { FaLinkedin, FaTwitter, FaGlobe, FaGithub } from 'react-icons/fa';
+import PropTypes from 'prop-types';
 
-export default function FeaturedInnovator({ innovator }) {
+const FeaturedInnovator = ({ innovator }) => {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="flex flex-col md:flex-row">
@@ -54,4 +55,22 @@ export default function FeaturedInnovator({ innovator }) {
       </div>
     </div>
   );
-}
+};
+
+FeaturedInnovator.propTypes = {
+  innovator: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    bio: PropTypes.string.isRequired,
+    achievements: PropTypes.arrayOf(PropTypes.string).isRequired,
+    links: PropTypes.shape({
+      linkedin: PropTypes.string,
+      twitter: PropTypes.string,
+      website: PropTypes.string,
+      github: PropTypes.string
+    }).isRequired
+  }).isRequired
+};
+
+export default FeaturedInnovator;
