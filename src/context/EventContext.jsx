@@ -131,3 +131,7 @@ export function useEvents() {
   }
   return context;
 }
+
+// Export the context for testing purposes if needed
+export const EventConsumer = EventContext.Consumer;
+export default EventContext;
