@@ -9,8 +9,6 @@ import {
   FiFileText, 
   FiSettings, 
   FiLogOut,
-  FiPlusCircle,
-  FiUserPlus,
   FiHome,
   FiRefreshCw
 } from 'react-icons/fi';
@@ -33,12 +31,7 @@ export default function Dashboard() {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
-      const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
-      const contentSections = JSON.parse(localStorage.getItem('uwiai_content')) || [];
-      
       setAdminName('Admin User');
-      // Stats are now used only in DashboardHome component
     } catch (error) {
       toast.error('Failed to load dashboard data');
     } finally {
@@ -188,7 +181,6 @@ export default function Dashboard() {
   );
 }
 
-// Prop type validation
 Dashboard.propTypes = {
-  // Add any props the component might receive
+  // Add prop types if this component receives any props
 };
