@@ -27,9 +27,7 @@ export default function EventCard({ event }) {
       isPastEvent = eventDate < new Date();
     }
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Invalid date format:', date);
-    }
+    // Error handling remains but console.error is removed for production
   }
 
   const handleRegisterClick = (e) => {
