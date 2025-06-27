@@ -66,6 +66,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const [newTag, setNewTag] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Load data from localStorage
   const loadData = useCallback(() => {
     try {
       const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
@@ -88,9 +89,11 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       }
     } catch (error) {
       toast.error('Failed to load data. Please refresh the page.');
+      console.error('Error loading data:', error);
     }
   }, [type, mode, id, events]);
 
+  // Set up storage event listener
   useEffect(() => {
     loadData();
     
@@ -104,6 +107,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [loadData, type]);
 
+  // Reset form states when in create mode
   useEffect(() => {
     if (mode === 'create') {
       const resetStates = {
@@ -129,6 +133,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }
   }, [type, mode]);
 
+  // Save data to localStorage or events context
   const saveData = useCallback(async (data, dataType) => {
     setIsSaving(true);
     try {
@@ -159,11 +164,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       navigate(`/admin/${dataType}`);
     } catch (error) {
       toast.error('Failed to save data. Please try again.');
+      console.error('Error saving data:', error);
     } finally {
       setIsSaving(false);
     }
   }, [navigate, updateEvents]);
 
+  // Handle refresh action
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -172,11 +179,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       toast.success('Data refreshed successfully');
     } catch (error) {
       toast.error('Failed to refresh data');
+      console.error('Error refreshing data:', error);
     } finally {
       setIsRefreshing(false);
     }
   };
 
+  // Handle file uploads
   const handleFileUpload = (fileType, e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -211,6 +220,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     toast.success(`${fileType.toUpperCase()} uploaded successfully`);
   };
 
+  // Remove uploaded file
   const removeFile = (fileType) => {
     setCurrentProject(prev => ({
       ...prev,
@@ -220,6 +230,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     toast.info(`${fileType.toUpperCase()} removed`);
   };
 
+  // Handle project form submission
   const handleProjectSubmit = (e) => {
     e.preventDefault();
     const newProject = {
@@ -239,6 +250,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedProjects, 'projects');
   };
 
+  // Handle event form submission
   const handleEventSubmit = async (e) => {
     e.preventDefault();
     
@@ -267,11 +279,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       navigate('/admin/events');
     } catch (error) {
       toast.error('Failed to save event');
+      console.error('Error saving event:', error);
     } finally {
       setIsSaving(false);
     }
   };
 
+  // Handle content form submission
   const handleContentSubmit = (e) => {
     e.preventDefault();
     const newContent = {
@@ -287,6 +301,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     saveData(updatedContent, 'content');
   };
 
+  // Handle item deletion
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
 
@@ -312,11 +327,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       navigate(`/admin/${type}`);
     } catch (error) {
       toast.error('Failed to delete item');
+      console.error('Error deleting item:', error);
     } finally {
       setIsSaving(false);
     }
   };
 
+  // Add tag to project
   const addTag = () => {
     if (newTag && !currentProject.tags.includes(newTag)) {
       setCurrentProject(prev => ({
@@ -327,6 +344,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }
   };
 
+  // Remove tag from project
   const removeTag = (tagToRemove) => {
     setCurrentProject(prev => ({
       ...prev,
@@ -334,8 +352,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     }));
   };
 
-  if (type === 'projects') {
-    return mode === 'list' ? (
+  // Projects list view
+  if (type === 'projects' && mode === 'list') {
+    return (
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-primary">Projects Management</h1>
@@ -407,7 +426,12 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
           )}
         </div>
       </div>
-    ) : (
+    );
+  }
+
+  // Projects create/edit view
+  if (type === 'projects' && mode !== 'list') {
+    return (
       <div className="p-8">
         <button
           onClick={() => navigate('/admin/projects')}
@@ -633,8 +657,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     );
   }
 
-  if (type === 'events') {
-    return mode === 'list' ? (
+  // Events list view
+  if (type === 'events' && mode === 'list') {
+    return (
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-primary">Events Management</h1>
@@ -699,7 +724,12 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
           )}
         </div>
       </div>
-    ) : (
+    );
+  }
+
+  // Events create/edit view
+  if (type === 'events' && mode !== 'list') {
+    return (
       <div className="p-8">
         <button
           onClick={() => navigate('/admin/events')}
@@ -818,8 +848,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     );
   }
 
-  if (type === 'content') {
-    return mode === 'list' ? (
+  // Content list view
+  if (type === 'content' && mode === 'list') {
+    return (
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-primary">Content Management</h1>
@@ -870,7 +901,12 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
           )}
         </div>
       </div>
-    ) : (
+    );
+  }
+
+  // Content create/edit view
+  if (type === 'content' && mode !== 'list') {
+    return (
       <div className="p-8">
         <button
           onClick={() => navigate('/admin/content')}
@@ -960,6 +996,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     );
   }
 
+  // Default view
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold text-primary mb-6">Content Editor</h1>
