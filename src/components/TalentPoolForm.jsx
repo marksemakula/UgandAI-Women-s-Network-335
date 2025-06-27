@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { FiUser, FiLink, FiMail, FiPhone, FiBriefcase } from 'react-icons/fi';
+import PropTypes from 'prop-types';
 
 export default function TalentPoolForm() {
   const [formData, setFormData] = useState({
@@ -90,14 +90,102 @@ export default function TalentPoolForm() {
     >
       <h3 className="text-2xl font-bold text-primary mb-6">Join Our Talent Pool</h3>
       <p className="text-gray-600 mb-6">
-        Be part of Uganda's growing network of women in AI. Create your public profile 
+        Be part of Uganda&apos;s growing network of women in AI. Create your public profile 
         and connect with opportunities. Your profile will be visible at: 
         <span className="font-medium"> uwaitalent.org/talent/your-name</span>
       </p>
       
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Form fields remain the same as before */}
-        
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className={`w-full p-2 border rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+          />
+          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            Email Address *
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className={`w-full p-2 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+          />
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="profileLink" className="block text-sm font-medium text-gray-700 mb-1">
+            LinkedIn Profile or Portfolio URL *
+          </label>
+          <input
+            type="url"
+            id="profileLink"
+            name="profileLink"
+            value={formData.profileLink}
+            onChange={handleChange}
+            className={`w-full p-2 border rounded-md ${errors.profileLink ? 'border-red-500' : 'border-gray-300'}`}
+            placeholder="https://linkedin.com/in/your-profile"
+          />
+          {errors.profileLink && <p className="mt-1 text-sm text-red-600">{errors.profileLink}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="expertise" className="block text-sm font-medium text-gray-700 mb-1">
+            Areas of Expertise
+          </label>
+          <input
+            type="text"
+            id="expertise"
+            name="expertise"
+            value={formData.expertise}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-md"
+            placeholder="Machine Learning, Data Science, NLP, etc."
+          />
+        </div>
+
+        <div>
+          <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+            Short Bio
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            value={formData.bio}
+            onChange={handleChange}
+            rows={4}
+            className="w-full p-2 border border-gray-300 rounded-md"
+            placeholder="Tell us about your background, experience, and interests..."
+          />
+        </div>
+
         <div className="pt-4">
           <button
             type="submit"
@@ -127,3 +215,9 @@ export default function TalentPoolForm() {
     </motion.div>
   );
 }
+
+TalentPoolForm.propTypes = {
+  // Add any props that the component receives here
+  // Example:
+  // initialData: PropTypes.object
+};
