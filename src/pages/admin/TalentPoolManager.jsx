@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { FiSearch, FiUser, FiLink, FiEdit, FiTrash2 } from 'react-icons/fi';
+import PropTypes from 'prop-types';
+import { FiSearch, FiUser, FiEdit, FiTrash2 } from 'react-icons/fi';
 
 export default function TalentPoolManager() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -12,8 +13,25 @@ export default function TalentPoolManager() {
       publicLink: 'uwaitalent/sarah-nakato',
       expertise: 'Machine Learning, Healthcare AI',
       status: 'approved'
+    },
+    {
+      id: '5f8d0d55b54764421b7156c4',
+      name: 'Grace Mbabazi',
+      email: 'grace@example.com',
+      profileLink: 'https://linkedin.com/in/grace-mbabazi',
+      publicLink: 'uwaitalent/grace-mbabazi',
+      expertise: 'Data Science, NLP',
+      status: 'pending'
+    },
+    {
+      id: '5f8d0d55b54764421b7156c5',
+      name: 'Diana Kibuuka',
+      email: 'diana@example.com',
+      profileLink: 'https://linkedin.com/in/diana-kibuuka',
+      publicLink: 'uwaitalent/diana-kibuuka',
+      expertise: 'Computer Vision, Robotics',
+      status: 'rejected'
     }
-    // More sample members...
   ]);
 
   const filteredMembers = members.filter(member =>
@@ -31,6 +49,15 @@ export default function TalentPoolManager() {
     setMembers(members.map(member =>
       member.id === id ? { ...member, status: 'rejected' } : member
     ));
+  };
+
+  const handleDelete = (id) => {
+    setMembers(members.filter(member => member.id !== id));
+  };
+
+  const handleEdit = (id) => {
+    // Implement edit functionality
+    console.log('Edit member with id:', id);
   };
 
   return (
@@ -82,7 +109,7 @@ export default function TalentPoolManager() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <a 
-                    href={`https://${member.publicLink}`} 
+                    href={member.profileLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-accent hover:text-accent-light"
@@ -98,11 +125,37 @@ export default function TalentPoolManager() {
                     {member.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-accent hover:text-accent-light mr-3">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                  {member.status !== 'approved' && (
+                    <button 
+                      onClick={() => handleApprove(member.id)}
+                      className="text-green-600 hover:text-green-800"
+                      title="Approve"
+                    >
+                      Approve
+                    </button>
+                  )}
+                  {member.status !== 'rejected' && (
+                    <button 
+                      onClick={() => handleReject(member.id)}
+                      className="text-yellow-600 hover:text-yellow-800"
+                      title="Reject"
+                    >
+                      Reject
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => handleEdit(member.id)}
+                    className="text-accent hover:text-accent-light"
+                    title="Edit"
+                  >
                     <FiEdit className="inline" />
                   </button>
-                  <button className="text-red-500 hover:text-red-700">
+                  <button 
+                    onClick={() => handleDelete(member.id)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Delete"
+                  >
                     <FiTrash2 className="inline" />
                   </button>
                 </td>
@@ -114,3 +167,20 @@ export default function TalentPoolManager() {
     </div>
   );
 }
+
+// PropTypes validation
+TalentPoolManager.propTypes = {
+  // Add any props the component receives here
+  // Example:
+  // initialMembers: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     id: PropTypes.string.isRequired,
+  //     name: PropTypes.string.isRequired,
+  //     email: PropTypes.string.isRequired,
+  //     profileLink: PropTypes.string.isRequired,
+  //     publicLink: PropTypes.string.isRequired,
+  //     expertise: PropTypes.string.isRequired,
+  //     status: PropTypes.oneOf(['approved', 'pending', 'rejected']).isRequired
+  //   })
+  // )
+};
