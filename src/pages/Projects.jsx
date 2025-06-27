@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import ProjectGallery from '../components/ProjectGallery';
 import { motion } from 'framer-motion';
 
@@ -55,7 +56,6 @@ export default function Projects() {
       setContent(validatedContent.length > 0 ? validatedContent : defaultContent);
       setError(null);
     } catch (err) {
-      console.error('Error loading projects:', err);
       setError('Failed to load projects. Showing default content.');
       setContent(defaultContent);
     } finally {
@@ -115,3 +115,20 @@ export default function Projects() {
     </div>
   );
 }
+
+// Add PropTypes validation for ProjectGallery
+ProjectGallery.propTypes = {
+  projects: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      creator: PropTypes.string.isRequired,
+      image: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+      tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+      status: PropTypes.string.isRequired,
+      links: PropTypes.object.isRequired,
+      category: PropTypes.string.isRequired
+    })
+  ).isRequired
+};
