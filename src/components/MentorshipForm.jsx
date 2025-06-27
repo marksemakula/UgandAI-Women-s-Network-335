@@ -1,7 +1,8 @@
 // src/components/MentorshipForm.jsx
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiUser, FiMail, FiPhone, FiBook, FiBriefcase, FiAward, FiHelpCircle } from 'react-icons/fi';
+import PropTypes from 'prop-types';
+import { FiUser, FiMail, FiPhone, FiAward, FiHelpCircle } from 'react-icons/fi';
 
 export default function MentorshipForm() {
   const [formData, setFormData] = useState({
@@ -326,7 +327,7 @@ export default function MentorshipForm() {
             animate={{ opacity: 1 }}
             className="mt-4 p-4 bg-green-50 text-green-700 rounded-md text-center"
           >
-            Thank you! We'll match you with suitable mentors/mentees soon.
+            Thank you! We&apos;ll match you with suitable mentors/mentees soon.
           </motion.div>
         )}
 
@@ -337,3 +338,10 @@ export default function MentorshipForm() {
     </motion.div>
   );
 }
+
+// Add prop validation if this component receives any props
+MentorshipForm.propTypes = {
+  // Example if props were being passed:
+  // onSubmit: PropTypes.func,
+  // initialData: PropTypes.object,
+};
