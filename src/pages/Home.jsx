@@ -51,13 +51,14 @@ EventsCalendar.propTypes = {
 export default function Home() {
   const { events, isLoading, error, loadEvents } = useEvents();
 
+  // Wrap loadEvents in useCallback to prevent unnecessary recreations
   const loadEventsCallback = useCallback(() => {
     loadEvents();
   }, [loadEvents]);
 
   useEffect(() => {
     loadEventsCallback();
-  }, [loadEventsCallback]);
+  }, [loadEventsCallback]); // Now using the memoized callback
 
   useEventSync(loadEventsCallback);
 
@@ -171,3 +172,8 @@ export default function Home() {
     </div>
   );
 }
+
+// Add prop types for the Home component if it receives any props
+Home.propTypes = {
+  // Add any props your Home component might receive
+};
