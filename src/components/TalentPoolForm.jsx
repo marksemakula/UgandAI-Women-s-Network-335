@@ -36,9 +36,12 @@ export default function TalentPoolForm() {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.name) newErrors.name = 'Name is required';
-    if (!formData.email) newErrors.email = 'Email is required';
-    if (!formData.profileLink) newErrors.profileLink = 'Profile link is required';
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    if (!formData.profileLink.trim()) newErrors.profileLink = 'Profile link is required';
+    else if (!/^https?:\/\/.+\..+/.test(formData.profileLink)) {
+      newErrors.profileLink = 'Please enter a valid URL';
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -58,7 +61,6 @@ export default function TalentPoolForm() {
       // Generate public link (in a real app, this would come from the backend)
       const publicLink = `uwaitalent/${formData.name.toLowerCase().replace(/\s+/g, '-')}`;
       
-      // In a real app, you would redirect to the profile after creation
       setSubmitSuccess(true);
       
       // Reset form after success
@@ -72,7 +74,6 @@ export default function TalentPoolForm() {
           bio: ''
         });
         setSubmitSuccess(false);
-        // Navigate to the new profile
         navigate(`/talent/${publicLink}`);
       }, 3000);
     } catch (error) {
@@ -107,8 +108,14 @@ export default function TalentPoolForm() {
             value={formData.name}
             onChange={handleChange}
             className={`w-full p-2 border rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? 'name-error' : undefined}
           />
-          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+          {errors.name && (
+            <p id="name-error" className="mt-1 text-sm text-red-600">
+              {errors.name}
+            </p>
+          )}
         </div>
 
         <div>
@@ -122,8 +129,14 @@ export default function TalentPoolForm() {
             value={formData.email}
             onChange={handleChange}
             className={`w-full p-2 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? 'email-error' : undefined}
           />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+          {errors.email && (
+            <p id="email-error" className="mt-1 text-sm text-red-600">
+              {errors.email}
+            </p>
+          )}
         </div>
 
         <div>
@@ -152,8 +165,14 @@ export default function TalentPoolForm() {
             onChange={handleChange}
             className={`w-full p-2 border rounded-md ${errors.profileLink ? 'border-red-500' : 'border-gray-300'}`}
             placeholder="https://linkedin.com/in/your-profile"
+            aria-invalid={!!errors.profileLink}
+            aria-describedby={errors.profileLink ? 'profileLink-error' : undefined}
           />
-          {errors.profileLink && <p className="mt-1 text-sm text-red-600">{errors.profileLink}</p>}
+          {errors.profileLink && (
+            <p id="profileLink-error" className="mt-1 text-sm text-red-600">
+              {errors.profileLink}
+            </p>
+          )}
         </div>
 
         <div>
@@ -191,10 +210,18 @@ export default function TalentPoolForm() {
             type="submit"
             disabled={isSubmitting}
             className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white
-              ${isSubmitting ? 'bg-gray-400' : 'bg-accent hover:bg-accent-light'} 
+              ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-light'} 
               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition`}
           >
-            {isSubmitting ? 'Creating Profile...' : 'Create My Profile'}
+            {isSubmitting ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Creating Profile...
+              </span>
+            ) : 'Create My Profile'}
           </button>
         </div>
 
@@ -203,13 +230,16 @@ export default function TalentPoolForm() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="mt-4 p-4 bg-green-50 text-green-700 rounded-md text-center"
+            role="alert"
           >
             Profile created successfully! Redirecting to your new profile...
           </motion.div>
         )}
 
         {errors.submit && (
-          <p className="mt-4 text-sm text-red-600 text-center">{errors.submit}</p>
+          <p className="mt-4 text-sm text-red-600 text-center">
+            {errors.submit}
+          </p>
         )}
       </form>
     </motion.div>
@@ -219,5 +249,12 @@ export default function TalentPoolForm() {
 TalentPoolForm.propTypes = {
   // Add any props that the component receives here
   // Example:
-  // initialData: PropTypes.object
+  // initialData: PropTypes.shape({
+  //   name: PropTypes.string,
+  //   email: PropTypes.string,
+  //   phone: PropTypes.string,
+  //   profileLink: PropTypes.string,
+  //   expertise: PropTypes.string,
+  //   bio: PropTypes.string
+  // })
 };
