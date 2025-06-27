@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiLock, FiMail } from 'react-icons/fi';
+import PropTypes from 'prop-types';
 
 export default function Login() {
   const [credentials, setCredentials] = useState({
@@ -61,7 +62,7 @@ export default function Login() {
       }
     } catch (err) {
       setError('Login failed. Please check your connection and try again.');
-      console.error('Login error:', err);
+      // Removed console.error statement
     } finally {
       setIsLoading(false);
     }
@@ -164,3 +165,10 @@ export default function Login() {
     </div>
   );
 }
+
+// Add prop types if this component receives any props in the future
+Login.propTypes = {
+  // Example if props were added:
+  // onLoginSuccess: PropTypes.func,
+  // redirectPath: PropTypes.string
+};
