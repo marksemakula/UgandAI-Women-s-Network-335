@@ -1,5 +1,5 @@
-// src/context/EventContext.jsx
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
 
 const EventContext = createContext();
 
@@ -27,8 +27,7 @@ export function EventProvider({ children }) {
       }));
       setEvents(validatedEvents);
       setError(null);
-    } catch (error) {
-      console.error('Error loading events:', error);
+    } catch (err) {
       setError('Failed to load events');
       setEvents([]);
     } finally {
@@ -66,9 +65,8 @@ export function EventProvider({ children }) {
       }));
       
       return validatedEvents;
-    } catch (error) {
-      console.error('Error updating events:', error);
-      throw error;
+    } catch (err) {
+      throw new Error('Error updating events');
     }
   }, []);
 
@@ -121,6 +119,10 @@ export function EventProvider({ children }) {
     </EventContext.Provider>
   );
 }
+
+EventProvider.propTypes = {
+  children: PropTypes.node.isRequired
+};
 
 export function useEvents() {
   const context = useContext(EventContext);
