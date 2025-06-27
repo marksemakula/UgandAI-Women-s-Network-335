@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { FiFilter, FiCalendar, FiMapPin, FiClock, FiExternalLink } from 'react-icons/fi';
+import { FiFilter } from 'react-icons/fi';
 import EventCard from './EventCard';
 
 const eventTypes = [
@@ -76,3 +77,14 @@ export default function EventsCalendar({ events = [] }) {
     </section>
   );
 }
+
+// Add PropTypes validation
+EventsCalendar.propTypes = {
+  events: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      type: PropTypes.string.isRequired
+      // Add other event properties here as needed
+    })
+  )
+};
