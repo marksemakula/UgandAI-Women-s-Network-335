@@ -78,13 +78,23 @@ export default function EventsCalendar({ events = [] }) {
   );
 }
 
-// Add PropTypes validation
 EventsCalendar.propTypes = {
   events: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      type: PropTypes.string.isRequired
-      // Add other event properties here as needed
+      title: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+      date: PropTypes.string.isRequired,
+      time: PropTypes.string,
+      location: PropTypes.string,
+      description: PropTypes.string,
+      googleFormLink: PropTypes.string,
+      formResponsesLink: PropTypes.string,
+      lastUpdated: PropTypes.string
     })
   )
+};
+
+EventsCalendar.defaultProps = {
+  events: []
 };
