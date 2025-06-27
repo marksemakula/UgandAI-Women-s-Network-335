@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { 
   FiUsers, 
   FiBook, 
@@ -10,7 +11,6 @@ import {
   FiLogOut,
   FiPlusCircle,
   FiUserPlus,
-  FiUsers as FiTalent,
   FiHome,
   FiRefreshCw
 } from 'react-icons/fi';
@@ -25,12 +25,6 @@ export default function Dashboard() {
   });
   
   const [adminName, setAdminName] = useState('Admin');
-  const [stats, setStats] = useState({
-    members: 0,
-    projects: 0,
-    events: 0,
-    contentSections: 0
-  });
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
@@ -44,14 +38,8 @@ export default function Dashboard() {
       const contentSections = JSON.parse(localStorage.getItem('uwiai_content')) || [];
       
       setAdminName('Admin User');
-      setStats({
-        members: 124,
-        projects: savedProjects.length,
-        events: savedEvents.length,
-        contentSections: contentSections.length
-      });
+      // Stats are now used only in DashboardHome component
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
       toast.error('Failed to load dashboard data');
     } finally {
       setIsLoading(false);
@@ -67,7 +55,6 @@ export default function Dashboard() {
 
     fetchData();
 
-    // Event listeners for updates
     const handleEventUpdate = () => {
       fetchData();
     };
@@ -88,7 +75,6 @@ export default function Dashboard() {
       await fetchData();
       toast.success('Data refreshed successfully');
     } catch (error) {
-      console.error('Error refreshing data:', error);
       toast.error('Failed to refresh data');
     } finally {
       setIsRefreshing(false);
@@ -118,29 +104,6 @@ export default function Dashboard() {
       ]
     },
     { icon: <FiSettings size={20} />, label: 'Settings', path: 'settings' }
-  ];
-
-  const quickActions = [
-    { 
-      icon: <FiPlusCircle size={24} className="mb-2 mx-auto" />, 
-      label: 'Add Project', 
-      path: '/admin/projects/new' 
-    },
-    { 
-      icon: <FiCalendar size={24} className="mb-2 mx-auto" />, 
-      label: 'Add Event', 
-      path: '/admin/events/new' 
-    },
-    { 
-      icon: <FiUserPlus size={24} className="mb-2 mx-auto" />, 
-      label: 'Add Member', 
-      path: '/admin/members/new' 
-    },
-    { 
-      icon: <FiFileText size={24} className="mb-2 mx-auto" />, 
-      label: 'Add Content', 
-      path: '/admin/content/new' 
-    }
   ];
 
   const isContentSection = activeTab === 'content' || location.pathname.includes('/admin/content');
@@ -224,3 +187,8 @@ export default function Dashboard() {
     </div>
   );
 }
+
+// Prop type validation
+Dashboard.propTypes = {
+  // Add any props the component might receive
+};
