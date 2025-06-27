@@ -1,6 +1,7 @@
 // ProjectCard.jsx
 import { motion } from 'framer-motion';
 import { FiGithub, FiExternalLink, FiUser, FiFile } from 'react-icons/fi';
+import PropTypes from 'prop-types';
 
 export default function ProjectCard({ project }) {
   const { title, creator, image, description, tags, links, status, category } = project;
@@ -93,3 +94,20 @@ export default function ProjectCard({ project }) {
     </motion.div>
   );
 }
+
+ProjectCard.propTypes = {
+  project: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    creator: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+    status: PropTypes.oneOf(['Completed', 'Published', 'In Progress']).isRequired,
+    category: PropTypes.oneOf(['Project', 'Research']).isRequired,
+    links: PropTypes.shape({
+      github: PropTypes.string,
+      demo: PropTypes.string,
+      pdf: PropTypes.string
+    })
+  }).isRequired
+};
