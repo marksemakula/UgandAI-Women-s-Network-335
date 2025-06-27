@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { FiLinkedin, FiTwitter, FiAward, FiExternalLink, FiGithub } from 'react-icons/fi';
+import PropTypes from 'prop-types';
 
-export default function InnovatorSpotlight({ innovator }) {
+const InnovatorSpotlight = ({ innovator }) => {
   const { name, title, image, bio, achievements, links, featured } = innovator;
 
   return (
@@ -91,4 +92,23 @@ export default function InnovatorSpotlight({ innovator }) {
       </div>
     </motion.div>
   );
-}
+};
+
+InnovatorSpotlight.propTypes = {
+  innovator: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    bio: PropTypes.string.isRequired,
+    featured: PropTypes.bool,
+    achievements: PropTypes.arrayOf(PropTypes.string).isRequired,
+    links: PropTypes.shape({
+      linkedin: PropTypes.string,
+      twitter: PropTypes.string,
+      github: PropTypes.string,
+      website: PropTypes.string
+    }).isRequired
+  }).isRequired
+};
+
+export default InnovatorSpotlight;
