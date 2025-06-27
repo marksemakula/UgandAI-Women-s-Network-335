@@ -27,7 +27,7 @@ export default function EventCard({ event }) {
       isPastEvent = eventDate < new Date();
     }
   } catch (error) {
-    // Error handling remains but console.error is removed for production
+    // Error handling remains but without console statement
   }
 
   const handleRegisterClick = (e) => {
