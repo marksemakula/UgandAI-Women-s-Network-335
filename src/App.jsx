@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PropTypes from 'prop-types';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Membership from './pages/Membership';
@@ -19,6 +20,10 @@ import DashboardHome from './pages/admin/DashboardHome';
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem('uwiai_admin_token');
   return isAuthenticated ? children : <Navigate to="/admin/login" replace />;
+};
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired
 };
 
 export default function App() {
@@ -94,3 +99,9 @@ export default function App() {
     </Router>
   );
 }
+
+// Add prop types for ContentEditor routes
+ContentEditor.propTypes = {
+  type: PropTypes.oneOf(['projects', 'events', 'content']),
+  mode: PropTypes.oneOf(['list', 'create', 'edit'])
+};
