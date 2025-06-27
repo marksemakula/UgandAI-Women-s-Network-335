@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useEvents } from '../context/EventContext';
 import { useEventSync } from '../hooks/useEventSync';
 import Hero from '../components/Hero';
@@ -23,14 +24,42 @@ const featuredStories = [
   }
 ];
 
+FeatureStory.propTypes = {
+  story: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired,
+    excerpt: PropTypes.string.isRequired
+  }).isRequired
+};
+
+EventsCalendar.propTypes = {
+  events: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      title: PropTypes.string,
+      date: PropTypes.string,
+      time: PropTypes.string,
+      location: PropTypes.string,
+      description: PropTypes.string,
+      type: PropTypes.string
+    })
+  ).isRequired
+};
+
 export default function Home() {
   const { events, isLoading, error, loadEvents } = useEvents();
 
-  useEffect(() => {
+  const loadEventsCallback = useCallback(() => {
     loadEvents();
-  }, []);
+  }, [loadEvents]);
 
-  useEventSync(loadEvents);
+  useEffect(() => {
+    loadEventsCallback();
+  }, [loadEventsCallback]);
+
+  useEventSync(loadEventsCallback);
 
   // Filter and sort upcoming events
   const upcomingEvents = useMemo(() => {
