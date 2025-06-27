@@ -1,5 +1,6 @@
 // ProjectGallery.jsx
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProjectCard from './ProjectCard';
 
@@ -11,7 +12,7 @@ export default function ProjectGallery({ projects }) {
 
   const filteredProjects = projects.filter(project => {
     const matchesFilter = filter === 'All' || 
-                         project.tags.includes(filter) || 
+                         (project.tags && project.tags.includes(filter)) || 
                          project.category === filter;
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,3 +84,18 @@ export default function ProjectGallery({ projects }) {
     </section>
   );
 }
+
+// PropTypes validation
+ProjectGallery.propTypes = {
+  projects: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      title: PropTypes.string.isRequired,
+      creator: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+      tags: PropTypes.arrayOf(PropTypes.string),
+      category: PropTypes.string
+      // Add other project properties as needed
+    })
+  ).isRequired
+};
