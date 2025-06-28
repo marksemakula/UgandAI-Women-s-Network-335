@@ -1,10 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 import ProjectGallery from '../components/ProjectGallery';
 
-// Default content in case localStorage is empty
-const defaultContent = [
+// Storage keys configuration
+const STORAGE_KEYS = {
+  PROJECTS: 'uwiai_projects',
+  RESEARCH: 'uwiai_research'
+};
+
+// Default content with improved structure
+const DEFAULT_CONTENT = [
   {
     id: 'default-1',
     title: 'AI-Powered Crop Disease Detection',
@@ -13,9 +20,14 @@ const defaultContent = [
     description: 'A machine learning model that identifies crop diseases from smartphone photos.',
     tags: ['Machine Learning', 'Agriculture'],
     status: 'Completed',
-    links: { github: '#', demo: '#' },
+    links: { 
+      github: '#', 
+      demo: '#',
+      documentation: '#'
+    },
     category: 'Project',
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
+    featured: true
   },
   {
     id: 'default-2',
@@ -25,19 +37,53 @@ const defaultContent = [
     description: 'Research paper on AI applications in sub-Saharan agriculture.',
     tags: ['Research', 'Agriculture'],
     status: 'Published',
-    links: { pdf: '#' },
+    links: { 
+      pdf: '#',
+      publication: '#'
+    },
     category: 'Research',
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
+    featured: true
   }
 ];
 
-// Initialize localStorage if empty
+// Enhanced storage initialization
 const initializeStorage = () => {
-  if (!localStorage.getItem('uwiai_projects')) {
-    localStorage.setItem('uwiai_projects', JSON.stringify([]));
+  try {
+    [STORAGE_KEYS.PROJECTS, STORAGE_KEYS.RESEARCH].forEach(key => {
+      if (!localStorage.getItem(key)) {
+        localStorage.setItem(key, JSON.stringify([]));
+      }
+    });
+  } catch (error) {
+    console.error('Storage initialization failed:', error);
+    throw error;
   }
-  if (!localStorage.getItem('uwiai_research')) {
-    localStorage.setItem('uwiai_research', JSON.stringify([]));
+};
+
+// Validate and normalize project data
+const normalizeProject = (project) => {
+  try {
+    return {
+      id: project.id || Date.now().toString(),
+      title: project.title || 'Untitled Project',
+      creator: project.creator || 'Unknown Creator',
+      image: project.image || '/images/default-project.jpg',
+      description: project.description || 'No description available',
+      tags: Array.isArray(project.tags) ? project.tags : [],
+      status: ['Completed', 'Published', 'In Progress', 'Planned'].includes(project.status) 
+        ? project.status 
+        : 'In Progress',
+      links: typeof project.links === 'object' ? project.links : {},
+      category: ['Project', 'Research'].includes(project.category) 
+        ? project.category 
+        : 'Project',
+      lastUpdated: project.lastUpdated || new Date().toISOString(),
+      featured: !!project.featured
+    };
+  } catch (error) {
+    console.error('Error normalizing project:', error);
+    throw error;
   }
 };
 
@@ -46,67 +92,60 @@ export default function Projects() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadProjects = useCallback(() => {
+  const loadProjects = useCallback(async () => {
     setIsLoading(true);
     try {
       initializeStorage();
       
-      // Load and validate projects
-      const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
-      const savedResearch = JSON.parse(localStorage.getItem('uwiai_research')) || [];
+      // Load and validate projects and research
+      const savedProjects = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROJECTS)) || [];
+      const savedResearch = JSON.parse(localStorage.getItem(STORAGE_KEYS.RESEARCH)) || [];
       
-      // Combine and validate all content
-      const combinedContent = [...savedProjects, ...savedResearch].map(item => {
-        // Basic validation
-        if (!item.id || typeof item.id !== 'string') {
-          item.id = Date.now().toString();
-        }
-        
-        return {
-          id: item.id,
-          title: item.title || 'Untitled Project',
-          creator: item.creator || 'Unknown Creator',
-          image: item.image || 'https://via.placeholder.com/300',
-          description: item.description || 'No description available',
-          tags: Array.isArray(item.tags) ? item.tags : [],
-          status: item.status || 'In Progress',
-          links: typeof item.links === 'object' ? item.links : {},
-          category: item.category || 'Project',
-          lastUpdated: item.lastUpdated || new Date().toISOString()
-        };
+      // Combine, validate and normalize all content
+      const combinedContent = [...savedProjects, ...savedResearch]
+        .map(project => {
+          try {
+            return normalizeProject(project);
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean);
+
+      // Sort by lastUpdated (newest first) then by featured status
+      combinedContent.sort((a, b) => {
+        const dateDiff = new Date(b.lastUpdated) - new Date(a.lastUpdated);
+        if (dateDiff !== 0) return dateDiff;
+        return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
       });
 
-      // Sort by lastUpdated (newest first)
-      combinedContent.sort((a, b) => 
-        new Date(b.lastUpdated) - new Date(a.lastUpdated)
-      );
-
-      setContent(combinedContent.length > 0 ? combinedContent : defaultContent);
+      setContent(combinedContent.length > 0 ? combinedContent : DEFAULT_CONTENT);
       setError(null);
     } catch (err) {
       console.error('Error loading projects:', err);
       setError('Failed to load projects. Showing default content.');
-      setContent(defaultContent);
+      setContent(DEFAULT_CONTENT);
+      toast.error('Could not load projects. Using default content.');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
+  // Handle content updates from other tabs/components
+  const handleContentUpdate = useCallback(() => {
+    loadProjects().catch(err => {
+      console.error('Error during content update:', err);
+    });
+  }, [loadProjects]);
+
   useEffect(() => {
     // Initial load
     loadProjects();
 
-    // Set up storage event listeners
+    // Set up event listeners
     const handleStorageChange = (e) => {
-      if (e.key === 'uwiai_projects' || e.key === 'uwiai_research') {
-        loadProjects();
-      }
-    };
-
-    // Custom event listener for content updates
-    const handleContentUpdate = (e) => {
-      if (e.detail?.type === 'projects' || e.detail?.type === 'research') {
-        loadProjects();
+      if ([STORAGE_KEYS.PROJECTS, STORAGE_KEYS.RESEARCH].includes(e.key)) {
+        handleContentUpdate();
       }
     };
 
@@ -117,7 +156,7 @@ export default function Projects() {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('contentUpdated', handleContentUpdate);
     };
-  }, [loadProjects]);
+  }, [loadProjects, handleContentUpdate]);
 
   return (
     <motion.div 
@@ -134,13 +173,15 @@ export default function Projects() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex justify-center py-12"
+              className="flex justify-center items-center py-16"
             >
-              <div 
-                className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"
-                aria-hidden="true"
-              />
-              <span className="sr-only">Loading projects...</span>
+              <div className="flex flex-col items-center">
+                <div 
+                  className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"
+                  aria-hidden="true"
+                />
+                <p className="mt-4 text-gray-600">Loading projects...</p>
+              </div>
             </motion.div>
           )}
 
@@ -157,7 +198,6 @@ export default function Projects() {
                     className="h-5 w-5 text-yellow-400" 
                     viewBox="0 0 20 20" 
                     fill="currentColor"
-                    aria-hidden="true"
                   >
                     <path 
                       fillRule="evenodd" 
@@ -170,7 +210,7 @@ export default function Projects() {
                   <p className="text-sm text-yellow-700">{error}</p>
                   <button
                     onClick={loadProjects}
-                    className="mt-2 text-sm text-yellow-600 hover:text-yellow-800 underline"
+                    className="mt-2 text-sm font-medium text-yellow-600 hover:text-yellow-800 underline"
                   >
                     Try again
                   </button>
@@ -195,9 +235,8 @@ export default function Projects() {
   );
 }
 
-// PropTypes validation
 Projects.propTypes = {
-  // Add any props your Projects component might receive
+  // Component props validation
 };
 
 ProjectGallery.propTypes = {
@@ -212,7 +251,8 @@ ProjectGallery.propTypes = {
       status: PropTypes.string.isRequired,
       links: PropTypes.object.isRequired,
       category: PropTypes.string.isRequired,
-      lastUpdated: PropTypes.string
+      lastUpdated: PropTypes.string,
+      featured: PropTypes.bool
     })
   ).isRequired
 };
