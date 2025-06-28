@@ -1,17 +1,16 @@
+// Projects.jsx - Updated version
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import ProjectGallery from '../components/ProjectGallery';
 
-// Storage keys configuration
 const STORAGE_KEYS = {
   PROJECTS: 'uwiai_projects',
   RESEARCH: 'uwiai_research'
 };
 
-// Default content with improved structure
-const DEFAULT_CONTENT = [
+const DEFAULT_PROJECTS = [
   {
     id: 'default-1',
     title: 'AI-Powered Crop Disease Detection',
@@ -20,48 +19,27 @@ const DEFAULT_CONTENT = [
     description: 'A machine learning model that identifies crop diseases from smartphone photos.',
     tags: ['Machine Learning', 'Agriculture'],
     status: 'Completed',
-    links: { 
-      github: '#', 
-      demo: '#',
-      documentation: '#'
-    },
+    links: { github: '#', demo: '#' },
     category: 'Project',
-    lastUpdated: new Date().toISOString(),
-    featured: true
-  },
-  {
-    id: 'default-2',
-    title: 'AI in African Agriculture',
-    creator: 'Dr. Jane Mbeka',
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    description: 'Research paper on AI applications in sub-Saharan agriculture.',
-    tags: ['Research', 'Agriculture'],
-    status: 'Published',
-    links: { 
-      pdf: '#',
-      publication: '#'
-    },
-    category: 'Research',
     lastUpdated: new Date().toISOString(),
     featured: true
   }
 ];
 
-// Enhanced storage initialization
 const initializeStorage = () => {
   try {
-    [STORAGE_KEYS.PROJECTS, STORAGE_KEYS.RESEARCH].forEach(key => {
-      if (!localStorage.getItem(key)) {
-        localStorage.setItem(key, JSON.stringify([]));
-      }
-    });
+    if (!localStorage.getItem(STORAGE_KEYS.PROJECTS)) {
+      localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(DEFAULT_PROJECTS));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.RESEARCH)) {
+      localStorage.setItem(STORAGE_KEYS.RESEARCH, JSON.stringify([]));
+    }
   } catch (error) {
     console.error('Storage initialization failed:', error);
     throw error;
   }
 };
 
-// Validate and normalize project data
 const normalizeProject = (project) => {
   try {
     return {
@@ -97,66 +75,37 @@ export default function Projects() {
     try {
       initializeStorage();
       
-      // Load and validate projects and research
       const savedProjects = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROJECTS)) || [];
       const savedResearch = JSON.parse(localStorage.getItem(STORAGE_KEYS.RESEARCH)) || [];
       
-      // Combine, validate and normalize all content
       const combinedContent = [...savedProjects, ...savedResearch]
-        .map(project => {
-          try {
-            return normalizeProject(project);
-          } catch {
-            return null;
-          }
-        })
-        .filter(Boolean);
+        .map(project => normalizeProject(project))
+        .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
 
-      // Sort by lastUpdated (newest first) then by featured status
-      combinedContent.sort((a, b) => {
-        const dateDiff = new Date(b.lastUpdated) - new Date(a.lastUpdated);
-        if (dateDiff !== 0) return dateDiff;
-        return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-      });
-
-      setContent(combinedContent.length > 0 ? combinedContent : DEFAULT_CONTENT);
+      setContent(combinedContent.length > 0 ? combinedContent : DEFAULT_PROJECTS);
       setError(null);
     } catch (err) {
       console.error('Error loading projects:', err);
       setError('Failed to load projects. Showing default content.');
-      setContent(DEFAULT_CONTENT);
+      setContent(DEFAULT_PROJECTS);
       toast.error('Could not load projects. Using default content.');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // Handle content updates from other tabs/components
-  const handleContentUpdate = useCallback(() => {
-    loadProjects().catch(err => {
-      console.error('Error during content update:', err);
-    });
-  }, [loadProjects]);
-
   useEffect(() => {
-    // Initial load
     loadProjects();
-
-    // Set up event listeners
+    
     const handleStorageChange = (e) => {
       if ([STORAGE_KEYS.PROJECTS, STORAGE_KEYS.RESEARCH].includes(e.key)) {
-        handleContentUpdate();
+        loadProjects();
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('contentUpdated', handleContentUpdate);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('contentUpdated', handleContentUpdate);
-    };
-  }, [loadProjects, handleContentUpdate]);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [loadProjects]);
 
   return (
     <motion.div 
@@ -167,43 +116,21 @@ export default function Projects() {
     >
       <div className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Loading State */}
           {isLoading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex justify-center items-center py-16"
-            >
+            <motion.div className="flex justify-center items-center py-16">
               <div className="flex flex-col items-center">
-                <div 
-                  className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"
-                  aria-hidden="true"
-                />
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent" />
                 <p className="mt-4 text-gray-600">Loading projects...</p>
               </div>
             </motion.div>
           )}
 
-          {/* Error State */}
           {error && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-lg"
-            >
+            <motion.div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-lg">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg 
-                    className="h-5 w-5 text-yellow-400" 
-                    viewBox="0 0 20 20" 
-                    fill="currentColor"
-                  >
-                    <path 
-                      fillRule="evenodd" 
-                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" 
-                      clipRule="evenodd" 
-                    />
+                  <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-3">
@@ -219,7 +146,6 @@ export default function Projects() {
             </motion.div>
           )}
 
-          {/* Content Display */}
           {!isLoading && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -237,22 +163,4 @@ export default function Projects() {
 
 Projects.propTypes = {
   // Component props validation
-};
-
-ProjectGallery.propTypes = {
-  projects: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      creator: PropTypes.string.isRequired,
-      image: PropTypes.string.isRequired,
-      description: PropTypes.string.isRequired,
-      tags: PropTypes.arrayOf(PropTypes.string).isRequired,
-      status: PropTypes.string.isRequired,
-      links: PropTypes.object.isRequired,
-      category: PropTypes.string.isRequired,
-      lastUpdated: PropTypes.string,
-      featured: PropTypes.bool
-    })
-  ).isRequired
 };
