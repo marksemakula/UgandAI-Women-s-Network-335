@@ -9,40 +9,58 @@ export function EventProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Initialize events in localStorage if empty
-  const initializeEvents = useCallback(() => {
-    if (!localStorage.getItem('uwiai_events')) {
-      localStorage.setItem('uwiai_events', JSON.stringify([]));
+  // Initialize all required localStorage items
+  const initializeStorage = useCallback(() => {
+    try {
+      ['uwiai_events', 'uwiai_projects', 'uwiai_content'].forEach(key => {
+        if (!localStorage.getItem(key)) {
+          localStorage.setItem(key, JSON.stringify([]));
+        }
+      });
+    } catch (error) {
+      console.error('Storage initialization failed:', error);
+      toast.error('Failed to initialize storage');
     }
   }, []);
 
-  // Validate and normalize event data
+  // Enhanced event validation and normalization
   const normalizeEvent = useCallback((event) => {
     try {
-      // Parse and validate date
+      // Date validation with fallback
       let validDate = null;
       if (event.date) {
         try {
           const dateObj = new Date(event.date);
           if (!isNaN(dateObj.getTime())) {
-            validDate = event.date;
+            validDate = dateObj.toISOString().split('T')[0]; // Format as YYYY-MM-DD
           }
         } catch (e) {
           console.warn('Invalid date format, using null');
         }
       }
 
+      // Time validation with fallback
+      let validTime = '12:00';
+      if (event.time && /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(event.time)) {
+        validTime = event.time;
+      }
+
       return {
         id: event.id || Date.now().toString(),
         title: event.title || 'Untitled Event',
         date: validDate,
-        time: event.time || '12:00',
+        time: validTime,
         location: event.location || 'Location TBD',
-        type: event.type || 'Training',
+        type: ['Training', 'Workshop', 'Conference', 'Networking'].includes(event.type) 
+          ? event.type 
+          : 'Training',
         description: event.description || '',
-        googleFormLink: event.googleFormLink || '',
-        formResponsesLink: event.formResponsesLink || 
-          (event.googleFormLink ? event.googleFormLink.replace('/viewform', '/viewanalytics') : ''),
+        googleFormLink: event.googleFormLink?.includes('docs.google.com/forms') 
+          ? event.googleFormLink 
+          : '',
+        formResponsesLink: event.googleFormLink?.includes('docs.google.com/forms')
+          ? event.googleFormLink.replace('/viewform', '/viewanalytics')
+          : '',
         lastUpdated: event.lastUpdated || new Date().toISOString()
       };
     } catch (err) {
@@ -51,14 +69,13 @@ export function EventProvider({ children }) {
     }
   }, []);
 
-  // Load events from localStorage with validation
+  // Load events with enhanced error handling
   const loadEvents = useCallback(async () => {
     setIsLoading(true);
     try {
-      initializeEvents(); // Ensure storage is initialized
+      initializeStorage();
       const savedEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
       
-      // Validate and normalize all events
       const validatedEvents = savedEvents.map(event => {
         try {
           return normalizeEvent(event);
@@ -66,7 +83,18 @@ export function EventProvider({ children }) {
           console.error('Invalid event skipped:', err);
           return null;
         }
-      }).filter(Boolean); // Remove any null entries from failed validations
+      }).filter(Boolean);
+
+      // Sort events by date (newest first)
+      validatedEvents.sort((a, b) => {
+        try {
+          const dateA = a.date ? new Date(a.date) : new Date(0);
+          const dateB = b.date ? new Date(b.date) : new Date(0);
+          return dateB - dateA;
+        } catch {
+          return 0;
+        }
+      });
 
       setEvents(validatedEvents);
       setError(null);
@@ -79,14 +107,13 @@ export function EventProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  }, [initializeEvents, normalizeEvent]);
+  }, [initializeStorage, normalizeEvent]);
 
-  // Update events in localStorage and state
+  // Update events with better synchronization
   const updateEvents = useCallback(async (newEvents) => {
     try {
       setIsLoading(true);
       
-      // Validate all events before saving
       const validatedEvents = newEvents.map(event => {
         try {
           return normalizeEvent(event);
@@ -100,20 +127,19 @@ export function EventProvider({ children }) {
       localStorage.setItem('uwiai_events', JSON.stringify(validatedEvents));
       setEvents(validatedEvents);
       
-      // Dispatch events to sync across tabs and components
+      // Dispatch custom event for same-tab listeners
       window.dispatchEvent(new CustomEvent('uwiai_events_updated', {
         detail: { events: validatedEvents }
       }));
       
-      // Also dispatch storage event for other tabs
-      const storageEvent = new StorageEvent('storage', {
+      // Dispatch storage event for cross-tab synchronization
+      window.dispatchEvent(new StorageEvent('storage', {
         key: 'uwiai_events',
         newValue: JSON.stringify(validatedEvents),
         oldValue: localStorage.getItem('uwiai_events'),
         storageArea: localStorage,
         url: window.location.href
-      });
-      window.dispatchEvent(storageEvent);
+      }));
       
       return validatedEvents;
     } catch (err) {
@@ -125,72 +151,92 @@ export function EventProvider({ children }) {
     }
   }, [normalizeEvent]);
 
-  // Create a new event
+  // Create event with improved validation
   const createEvent = useCallback(async (eventData) => {
     try {
+      if (!eventData.title || !eventData.description) {
+        throw new Error('Title and description are required');
+      }
+
       const newEvent = normalizeEvent({
         ...eventData,
         id: Date.now().toString()
       });
+
       const updatedEvents = [...events, newEvent];
       await updateEvents(updatedEvents);
       toast.success('Event created successfully');
       return newEvent;
     } catch (err) {
-      toast.error('Failed to create event');
+      toast.error(err.message || 'Failed to create event');
       throw err;
     }
   }, [events, normalizeEvent, updateEvents]);
 
-  // Update a single event
+  // Update event with better error handling
   const updateEvent = useCallback(async (eventId, updates) => {
     try {
+      const existingEvent = events.find(e => e.id === eventId);
+      if (!existingEvent) {
+        throw new Error('Event not found');
+      }
+
       const updatedEvents = events.map(event => 
         event.id === eventId ? normalizeEvent({ ...event, ...updates }) : event
       );
+      
       await updateEvents(updatedEvents);
       toast.success('Event updated successfully');
       return updatedEvents.find(e => e.id === eventId);
     } catch (err) {
-      toast.error('Failed to update event');
+      toast.error(err.message || 'Failed to update event');
       throw err;
     }
   }, [events, normalizeEvent, updateEvents]);
 
-  // Delete a single event
+  // Delete event with confirmation
   const deleteEvent = useCallback(async (eventId) => {
     try {
+      if (!events.some(e => e.id === eventId)) {
+        throw new Error('Event not found');
+      }
+
       const updatedEvents = events.filter(event => event.id !== eventId);
       await updateEvents(updatedEvents);
       toast.success('Event deleted successfully');
       return updatedEvents;
     } catch (err) {
-      toast.error('Failed to delete event');
+      toast.error(err.message || 'Failed to delete event');
       throw err;
     }
   }, [events, updateEvents]);
 
-  // Force refresh events data
+  // Force refresh with loading state
   const forceRefresh = useCallback(async () => {
     try {
-      const events = await loadEvents();
+      setIsLoading(true);
+      const refreshedEvents = await loadEvents();
+      
       window.dispatchEvent(new CustomEvent('uwiai_events_forced_refresh', {
-        detail: { events }
+        detail: { events: refreshedEvents }
       }));
+      
       toast.success('Events refreshed successfully');
-      return events;
+      return refreshedEvents;
     } catch (err) {
       toast.error('Failed to refresh events');
       throw err;
+    } finally {
+      setIsLoading(false);
     }
   }, [loadEvents]);
 
-  // Get event by ID
+  // Get event by ID with null check
   const getEventById = useCallback((id) => {
-    return events.find(event => event.id === id);
+    return events.find(event => event.id === id) || null;
   }, [events]);
 
-  // Set up event listeners and initial load
+  // Set up event listeners with cleanup
   useEffect(() => {
     let isMounted = true;
 
@@ -203,27 +249,18 @@ export function EventProvider({ children }) {
     };
 
     const handleCustomEvent = (e) => {
-      if (isMounted) {
-        try {
-          // Update from custom event data if available
-          if (e.detail?.events) {
-            setEvents(e.detail.events);
-          } else {
-            loadEvents().catch(console.error);
-          }
-        } catch (err) {
-          console.error('Error handling custom event:', err);
-        }
+      if (isMounted && e.detail?.events) {
+        setEvents(e.detail.events);
       }
     };
 
     // Initial load
-    initializeEvents();
+    initializeStorage();
     loadEvents().catch(err => {
       console.error('Initial events load failed:', err);
     });
 
-    // Set up listeners
+    // Event listeners
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('uwiai_events_updated', handleCustomEvent);
     window.addEventListener('uwiai_events_forced_refresh', handleCustomEvent);
@@ -234,7 +271,7 @@ export function EventProvider({ children }) {
       window.removeEventListener('uwiai_events_updated', handleCustomEvent);
       window.removeEventListener('uwiai_events_forced_refresh', handleCustomEvent);
     };
-  }, [initializeEvents, loadEvents]);
+  }, [initializeStorage, loadEvents]);
 
   // Memoized context value
   const value = useMemo(() => ({
