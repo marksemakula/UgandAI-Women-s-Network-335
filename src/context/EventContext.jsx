@@ -85,12 +85,12 @@ export function EventProvider({ children }) {
         }
       }).filter(Boolean);
 
-      // Sort events by date (newest first)
+      // Sort events by date (soonest first)
       validatedEvents.sort((a, b) => {
         try {
           const dateA = a.date ? new Date(a.date) : new Date(0);
           const dateB = b.date ? new Date(b.date) : new Date(0);
-          return dateB - dateA;
+          return dateA - dateB; // Changed to ascending order for upcoming events
         } catch {
           return 0;
         }
@@ -132,14 +132,17 @@ export function EventProvider({ children }) {
         detail: { events: validatedEvents }
       }));
       
-      // Dispatch storage event for cross-tab synchronization
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'uwiai_events',
-        newValue: JSON.stringify(validatedEvents),
-        oldValue: localStorage.getItem('uwiai_events'),
-        storageArea: localStorage,
-        url: window.location.href
-      }));
+      // Enhanced cross-tab synchronization
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('uwiai_events', JSON.stringify(validatedEvents));
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'uwiai_events',
+          newValue: JSON.stringify(validatedEvents),
+          oldValue: localStorage.getItem('uwiai_events'),
+          storageArea: localStorage,
+          url: window.location.href
+        }));
+      }
       
       return validatedEvents;
     } catch (err) {
@@ -154,8 +157,8 @@ export function EventProvider({ children }) {
   // Create event with improved validation
   const createEvent = useCallback(async (eventData) => {
     try {
-      if (!eventData.title || !eventData.description) {
-        throw new Error('Title and description are required');
+      if (!eventData.title || !eventData.description || !eventData.date) {
+        throw new Error('Title, date and description are required');
       }
 
       const newEvent = normalizeEvent({
@@ -199,6 +202,10 @@ export function EventProvider({ children }) {
     try {
       if (!events.some(e => e.id === eventId)) {
         throw new Error('Event not found');
+      }
+
+      if (!window.confirm('Are you sure you want to delete this event?')) {
+        return;
       }
 
       const updatedEvents = events.filter(event => event.id !== eventId);
@@ -321,3 +328,6 @@ export function useEvents() {
 
 export const EventConsumer = EventContext.Consumer;
 export default EventContext;
+EventConsumer.propTypes = {
+  children: PropTypes.func.isRequired
+};
