@@ -18,7 +18,7 @@ import {
   FiRefreshCw
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
-import { useEvents } from '@context/EventContext';
+import { useEvents } from '../../context/EventContext';
 
 export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const { id } = useParams();
@@ -29,6 +29,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const [projects, setProjects] = useState([]);
   const [contentSections, setContentSections] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   const [currentProject, setCurrentProject] = useState({
     id: '',
@@ -39,15 +40,16 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
     status: 'Completed',
     links: { github: '', demo: '', pdf: '' },
     files: { video: null, pdf: null, text: null },
-    filePreviews: { video: '', pdf: '', text: '' }
+    filePreviews: { video: '', pdf: '', text: '' },
+    lastUpdated: new Date().toISOString()
   });
   
   const [currentEvent, setCurrentEvent] = useState({
     id: '',
     title: '',
     date: '',
-    time: '',
-    location: '',
+    time: '12:00',
+    location: 'Location TBD',
     description: '',
     type: 'Training',
     googleFormLink: '',
@@ -64,7 +66,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   });
   
   const [newTag, setNewTag] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
 
   // Load data from localStorage
   const loadData = useCallback(() => {
@@ -78,7 +79,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       if (mode === 'edit' && id) {
         if (type === 'projects') {
           const project = savedProjects.find(p => p.id === id);
-          if (project) setCurrentProject(project);
+          if (project) {
+            setCurrentProject({
+              ...project,
+              files: project.files || { video: null, pdf: null, text: null },
+              filePreviews: project.filePreviews || { video: '', pdf: '', text: '' }
+            });
+          }
         } else if (type === 'events') {
           const event = events.find(e => e.id === id);
           if (event) setCurrentEvent(event);
@@ -115,10 +122,11 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
           id: '', title: '', creator: '', description: '', tags: [],
           status: 'Completed', links: { github: '', demo: '', pdf: '' },
           files: { video: null, pdf: null, text: null },
-          filePreviews: { video: '', pdf: '', text: '' }
+          filePreviews: { video: '', pdf: '', text: '' },
+          lastUpdated: new Date().toISOString()
         }),
         events: () => setCurrentEvent({
-          id: '', title: '', date: '', time: '', location: '',
+          id: '', title: '', date: '', time: '12:00', location: 'Location TBD',
           description: '', type: 'Training',
           googleFormLink: '', formResponsesLink: '',
           lastUpdated: new Date().toISOString()
@@ -132,43 +140,6 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       resetStates[type]?.();
     }
   }, [type, mode]);
-
-  // Save data to localStorage or events context
-  const saveData = useCallback(async (data, dataType) => {
-    setIsSaving(true);
-    try {
-      if (dataType === 'events') {
-        const validatedEvents = data.map(event => ({
-          id: event.id || Date.now().toString(),
-          title: event.title || 'Untitled Event',
-          date: event.date || null,
-          time: event.time || '',
-          location: event.location || 'Location TBD',
-          type: event.type || 'Event',
-          description: event.description || '',
-          googleFormLink: event.googleFormLink || '',
-          formResponsesLink: event.formResponsesLink || 
-            (event.googleFormLink ? event.googleFormLink.replace('/viewform', '/viewanalytics') : ''),
-          lastUpdated: new Date().toISOString()
-        }));
-        
-        await updateEvents(validatedEvents);
-      } else {
-        localStorage.setItem(`uwiai_${dataType}`, JSON.stringify(data));
-        window.dispatchEvent(new CustomEvent('contentUpdated', {
-          detail: { type: dataType }
-        }));
-      }
-      
-      toast.success(`${dataType.charAt(0).toUpperCase() + dataType.slice(1)} saved successfully!`);
-      navigate(`/admin/${dataType}`);
-    } catch (error) {
-      toast.error('Failed to save data. Please try again.');
-      console.error('Error saving data:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [navigate, updateEvents]);
 
   // Handle refresh action
   const handleRefresh = async () => {
@@ -231,42 +202,66 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   };
 
   // Handle project form submission
-  const handleProjectSubmit = (e) => {
+  const handleProjectSubmit = async (e) => {
     e.preventDefault();
-    const newProject = {
-      ...currentProject,
-      id: mode === 'edit' ? currentProject.id : Date.now().toString(),
-      files: {
-        video: currentProject.filePreviews.video,
-        pdf: currentProject.filePreviews.pdf,
-        text: currentProject.filePreviews.text
-      }
-    };
     
-    const updatedProjects = mode === 'edit'
-      ? projects.map(p => p.id === newProject.id ? newProject : p)
-      : [...projects, newProject];
+    // Basic validation
+    if (!currentProject.title || !currentProject.creator || !currentProject.description) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    setIsSaving(true);
     
-    saveData(updatedProjects, 'projects');
+    try {
+      const newProject = {
+        ...currentProject,
+        id: mode === 'edit' ? currentProject.id : Date.now().toString(),
+        lastUpdated: new Date().toISOString()
+      };
+      
+      const updatedProjects = mode === 'edit'
+        ? projects.map(p => p.id === newProject.id ? newProject : p)
+        : [...projects, newProject];
+      
+      localStorage.setItem('uwiai_projects', JSON.stringify(updatedProjects));
+      window.dispatchEvent(new CustomEvent('contentUpdated', {
+        detail: { type: 'projects' }
+      }));
+      
+      toast.success('Project saved successfully!');
+      navigate('/admin/projects');
+    } catch (error) {
+      toast.error('Failed to save project');
+      console.error('Error saving project:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle event form submission
   const handleEventSubmit = async (e) => {
     e.preventDefault();
     
+    // Basic validation
+    if (!currentEvent.title || !currentEvent.date || !currentEvent.location || !currentEvent.description) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
     if (currentEvent.googleFormLink && !currentEvent.googleFormLink.includes('docs.google.com/forms')) {
       toast.error('Please enter a valid Google Form link');
       return;
     }
 
+    setIsSaving(true);
+    
     try {
-      setIsSaving(true);
-      
       const newEvent = {
         ...currentEvent,
         id: mode === 'edit' ? currentEvent.id : Date.now().toString(),
-        formResponsesLink: currentEvent.formResponsesLink || 
-          (currentEvent.googleFormLink ? currentEvent.googleFormLink.replace('/viewform', '/viewanalytics') : ''),
+        formResponsesLink: currentEvent.googleFormLink ? 
+          currentEvent.googleFormLink.replace('/viewform', '/viewanalytics') : '',
         lastUpdated: new Date().toISOString()
       };
       
@@ -286,32 +281,56 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   };
 
   // Handle content form submission
-  const handleContentSubmit = (e) => {
+  const handleContentSubmit = async (e) => {
     e.preventDefault();
-    const newContent = {
-      ...currentContent,
-      id: mode === 'edit' ? currentContent.id : Date.now().toString(),
-      lastUpdated: new Date().toISOString()
-    };
     
-    const updatedContent = mode === 'edit'
-      ? contentSections.map(c => c.id === newContent.id ? newContent : c)
-      : [...contentSections, newContent];
+    if (!currentContent.section || !currentContent.title || !currentContent.content) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    setIsSaving(true);
     
-    saveData(updatedContent, 'content');
+    try {
+      const newContent = {
+        ...currentContent,
+        id: mode === 'edit' ? currentContent.id : Date.now().toString(),
+        lastUpdated: new Date().toISOString()
+      };
+      
+      const updatedContent = mode === 'edit'
+        ? contentSections.map(c => c.id === newContent.id ? newContent : c)
+        : [...contentSections, newContent];
+      
+      localStorage.setItem('uwiai_content', JSON.stringify(updatedContent));
+      window.dispatchEvent(new CustomEvent('contentUpdated', {
+        detail: { type: 'content' }
+      }));
+      
+      toast.success('Content saved successfully!');
+      navigate('/admin/content');
+    } catch (error) {
+      toast.error('Failed to save content');
+      console.error('Error saving content:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle item deletion
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
 
+    setIsSaving(true);
+    
     try {
-      setIsSaving(true);
-      
       if (type === 'projects') {
         const updatedProjects = projects.filter(p => p.id !== id);
         localStorage.setItem('uwiai_projects', JSON.stringify(updatedProjects));
         setProjects(updatedProjects);
+        window.dispatchEvent(new CustomEvent('contentUpdated', {
+          detail: { type: 'projects' }
+        }));
         toast.success('Project deleted successfully');
       } else if (type === 'events') {
         const updatedEvents = events.filter(e => e.id !== id);
@@ -321,6 +340,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
         const updatedContent = contentSections.filter(c => c.id !== id);
         localStorage.setItem('uwiai_content', JSON.stringify(updatedContent));
         setContentSections(updatedContent);
+        window.dispatchEvent(new CustomEvent('contentUpdated', {
+          detail: { type: 'content' }
+        }));
         toast.success('Content deleted successfully');
       }
       
@@ -369,7 +391,15 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
 
         <div className="bg-white p-6 rounded-lg shadow">
           {projects.length === 0 ? (
-            <p className="text-gray-500">No projects added yet</p>
+            <div className="text-center py-8">
+              <p className="text-gray-500 mb-4">No projects added yet</p>
+              <button
+                onClick={() => navigate('/admin/projects/new')}
+                className="px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-light transition"
+              >
+                Create Your First Project
+              </button>
+            </div>
           ) : (
             <div className="space-y-4">
               {projects.map(project => (
@@ -387,17 +417,17 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
                           </span>
                         ))}
                       </div>
-                      {project.files?.video && (
+                      {project.filePreviews?.video && (
                         <span className="inline-flex items-center text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded mt-1">
                           <FiVideo className="mr-1" /> Has Video
                         </span>
                       )}
-                      {project.files?.pdf && (
+                      {project.filePreviews?.pdf && (
                         <span className="inline-flex items-center text-xs bg-green-100 text-green-800 px-2 py-1 rounded mt-1 ml-1">
                           <FiFile className="mr-1" /> Has PDF
                         </span>
                       )}
-                      {project.files?.text && (
+                      {project.filePreviews?.text && (
                         <span className="inline-flex items-center text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded mt-1 ml-1">
                           <FiFileText className="mr-1" /> Has Docs
                         </span>
@@ -476,6 +506,19 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               className="w-full p-2 border border-gray-300 rounded min-h-[100px]"
               required
             />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select
+              value={currentProject.status}
+              onChange={(e) => setCurrentProject({ ...currentProject, status: e.target.value })}
+              className="w-full p-2 border border-gray-300 rounded"
+            >
+              <option value="Completed">Completed</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Planned">Planned</option>
+            </select>
           </div>
 
           <div className="mb-4">
@@ -684,7 +727,15 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
 
         <div className="bg-white p-6 rounded-lg shadow">
           {events.length === 0 ? (
-            <p className="text-gray-500">No events added yet</p>
+            <div className="text-center py-8">
+              <p className="text-gray-500 mb-4">No events added yet</p>
+              <button
+                onClick={() => navigate('/admin/events/new')}
+                className="px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-light transition"
+              >
+                Create Your First Event
+              </button>
+            </div>
           ) : (
             <div className="space-y-4">
               {events.map(event => (
@@ -700,6 +751,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
                         <FiMapPin className="inline mr-1" />
                         {event.location}
                       </p>
+                      <span className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${
+                        event.type === 'Training' ? 'bg-blue-100 text-blue-800' :
+                        event.type === 'Workshop' ? 'bg-green-100 text-green-800' :
+                        'bg-purple-100 text-purple-800'
+                      }`}>
+                        {event.type}
+                      </span>
                     </div>
                     <div className="flex space-x-2">
                       <button
@@ -776,15 +834,17 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Type*</label>
               <select
                 value={currentEvent.type}
                 onChange={(e) => setCurrentEvent({ ...currentEvent, type: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
+                required
               >
                 <option value="Training">Training</option>
                 <option value="Workshop">Workshop</option>
                 <option value="Conference">Conference</option>
+                <option value="Networking">Networking</option>
               </select>
             </div>
           </div>
@@ -811,14 +871,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Google Form Link*</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Google Form Link</label>
             <input
               type="url"
               value={currentEvent.googleFormLink}
               onChange={(e) => setCurrentEvent({ ...currentEvent, googleFormLink: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded"
               placeholder="https://docs.google.com/forms/..."
-              required
             />
           </div>
 
@@ -865,7 +924,15 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
 
         <div className="bg-white p-6 rounded-lg shadow">
           {contentSections.length === 0 ? (
-            <p className="text-gray-500">No content sections added yet</p>
+            <div className="text-center py-8">
+              <p className="text-gray-500 mb-4">No content sections added yet</p>
+              <button
+                onClick={() => navigate('/admin/content/new')}
+                className="px-4 py-2 bg-accent text-white rounded-md hover:bg-accent-light transition"
+              >
+                Create Your First Content
+              </button>
+            </div>
           ) : (
             <div className="space-y-4">
               {contentSections.map(content => (
@@ -876,6 +943,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
                       <p className="text-sm text-gray-600">
                         <FiType className="inline mr-1" />
                         {content.section}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Last updated: {new Date(content.lastUpdated).toLocaleString()}
                       </p>
                     </div>
                     <div className="flex space-x-2">
