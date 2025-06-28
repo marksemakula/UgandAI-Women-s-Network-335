@@ -67,9 +67,24 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   
   const [newTag, setNewTag] = useState('');
 
+  // Initialize localStorage if empty
+  const initializeStorage = useCallback(() => {
+    try {
+      ['uwiai_events', 'uwiai_projects', 'uwiai_content'].forEach(key => {
+        if (!localStorage.getItem(key)) {
+          localStorage.setItem(key, JSON.stringify([]));
+        }
+      });
+    } catch (error) {
+      console.error('Storage initialization failed:', error);
+    }
+  }, []);
+
   // Load data from localStorage
   const loadData = useCallback(() => {
     try {
+      initializeStorage();
+      
       const savedProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
       const savedContent = JSON.parse(localStorage.getItem('uwiai_content')) || [];
       
@@ -98,7 +113,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       toast.error('Failed to load data. Please refresh the page.');
       console.error('Error loading data:', error);
     }
-  }, [type, mode, id, events]);
+  }, [type, mode, id, events, initializeStorage]);
 
   // Set up storage event listener
   useEffect(() => {
@@ -205,9 +220,9 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const handleProjectSubmit = async (e) => {
     e.preventDefault();
     
-    // Basic validation
+    // Enhanced validation
     if (!currentProject.title || !currentProject.creator || !currentProject.description) {
-      toast.error('Please fill in all required fields');
+      toast.error('Title, creator and description are required');
       return;
     }
 
@@ -217,14 +232,26 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
       const newProject = {
         ...currentProject,
         id: mode === 'edit' ? currentProject.id : Date.now().toString(),
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        // Ensure all fields have defaults
+        tags: currentProject.tags || [],
+        links: currentProject.links || {},
+        files: currentProject.files || {},
+        filePreviews: currentProject.filePreviews || {}
       };
       
-      const updatedProjects = mode === 'edit'
-        ? projects.map(p => p.id === newProject.id ? newProject : p)
-        : [...projects, newProject];
+      // Get current projects from localStorage
+      const currentProjects = JSON.parse(localStorage.getItem('uwiai_projects')) || [];
       
+      const updatedProjects = mode === 'edit'
+        ? currentProjects.map(p => p.id === newProject.id ? newProject : p)
+        : [...currentProjects, newProject];
+      
+      // Save to localStorage
       localStorage.setItem('uwiai_projects', JSON.stringify(updatedProjects));
+      
+      // Update state and trigger refresh
+      setProjects(updatedProjects);
       window.dispatchEvent(new CustomEvent('contentUpdated', {
         detail: { type: 'projects' }
       }));
@@ -243,13 +270,13 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
   const handleEventSubmit = async (e) => {
     e.preventDefault();
     
-    // Basic validation
-    if (!currentEvent.title || !currentEvent.date || !currentEvent.location || !currentEvent.description) {
-      toast.error('Please fill in all required fields');
+    // Enhanced validation
+    if (!currentEvent.title || !currentEvent.description) {
+      toast.error('Title and description are required');
       return;
     }
-    
-    if (currentEvent.googleFormLink && !currentEvent.googleFormLink.includes('docs.google.com/forms')) {
+
+    if (currentEvent.googleFormLink && !currentEvent.googleFormLink.includes('docs.google.com')) {
       toast.error('Please enter a valid Google Form link');
       return;
     }
@@ -265,11 +292,17 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
         lastUpdated: new Date().toISOString()
       };
       
-      const updatedEvents = mode === 'edit'
-        ? events.map(e => e.id === newEvent.id ? newEvent : e)
-        : [...events, newEvent];
+      // Get current events from localStorage
+      const currentEvents = JSON.parse(localStorage.getItem('uwiai_events')) || [];
       
+      const updatedEvents = mode === 'edit'
+        ? currentEvents.map(e => e.id === newEvent.id ? newEvent : e)
+        : [...currentEvents, newEvent];
+      
+      // Save to localStorage and update context
+      localStorage.setItem('uwiai_events', JSON.stringify(updatedEvents));
       await updateEvents(updatedEvents);
+      
       toast.success('Event saved successfully!');
       navigate('/admin/events');
     } catch (error) {
@@ -303,6 +336,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
         : [...contentSections, newContent];
       
       localStorage.setItem('uwiai_content', JSON.stringify(updatedContent));
+      setContentSections(updatedContent);
       window.dispatchEvent(new CustomEvent('contentUpdated', {
         detail: { type: 'content' }
       }));
@@ -334,6 +368,7 @@ export default function ContentEditor({ type = 'projects', mode = 'list' }) {
         toast.success('Project deleted successfully');
       } else if (type === 'events') {
         const updatedEvents = events.filter(e => e.id !== id);
+        localStorage.setItem('uwiai_events', JSON.stringify(updatedEvents));
         await updateEvents(updatedEvents);
         toast.success('Event deleted successfully');
       } else if (type === 'content') {
