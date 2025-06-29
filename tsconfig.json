@@ -1,18 +1,13 @@
 {
   "compilerOptions": {
-    // Language and Environment
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "jsx": "react-jsx",
-    
-    // Modules
     "module": "ESNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    
-    // Type Checking
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -25,12 +20,8 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    
-    // Additional Checks
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    
-    // Paths and Imports
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"],
@@ -40,15 +31,8 @@
       "@hooks/*": ["hooks/*"],
       "@utils/*": ["utils/*"]
     },
-    
-    // Output
-    "noEmit": true,
-    
-    // Vite Support
     "types": ["vite/client"]
   },
-  
-  // Files to include
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
@@ -56,8 +40,6 @@
     "src/**/*.jsx",
     "vite.config.ts"
   ],
-  
-  // Files to exclude
   "exclude": [
     "node_modules",
     "dist",

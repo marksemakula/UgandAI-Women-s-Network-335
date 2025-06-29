@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { FiSearch, FiUser, FiEdit, FiTrash2 } from 'react-icons/fi';
 
 export default function TalentPoolManager() {

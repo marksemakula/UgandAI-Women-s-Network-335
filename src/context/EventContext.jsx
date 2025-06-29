@@ -1,6 +1,6 @@
 // EventContext.jsx - Updated version
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 
 const EventContext = createContext();

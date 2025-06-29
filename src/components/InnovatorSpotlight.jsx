@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { FiLinkedin, FiTwitter, FiAward, FiExternalLink, FiGithub } from 'react-icons/fi';
 import PropTypes from 'prop-types';
+import { FiLinkedin, FiTwitter, FiAward, FiExternalLink, FiGithub } from 'react-icons/fi';
 
 const InnovatorSpotlight = ({ innovator }) => {
   const { name, title, image, bio, achievements, links, featured } = innovator;

@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
-import { useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { useMemo, useEffect, useCallback } from 'react';
+
+import EventsCalendar from '../components/EventsCalendar';
+import FeatureStory from '../components/FeatureStory';
+import Hero from '../components/Hero';
 import { useEvents } from '../context/EventContext';
 import { useEventSync } from '../hooks/useEventSync';
-import Hero from '../components/Hero';
-import FeatureStory from '../components/FeatureStory';
-import EventsCalendar from '../components/EventsCalendar';
 
 const featuredStories = [
   {

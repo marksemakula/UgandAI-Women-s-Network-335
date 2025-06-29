@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import InnovatorSpotlight from '../components/InnovatorSpotlight';
+
 import FeaturedInnovator from '../components/FeaturedInnovator';
+import InnovatorSpotlight from '../components/InnovatorSpotlight';
 
 const innovators = [
   // Featured Innovators (will appear in single rows)

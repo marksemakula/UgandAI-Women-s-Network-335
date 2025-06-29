@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiLock, FiMail } from 'react-icons/fi';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { FiLock, FiMail } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [credentials, setCredentials] = useState({

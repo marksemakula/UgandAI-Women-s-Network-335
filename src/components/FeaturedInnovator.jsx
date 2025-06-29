@@ -1,5 +1,5 @@
-import { FaLinkedin, FaTwitter, FaGlobe, FaGithub } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import { FaLinkedin, FaTwitter, FaGlobe, FaGithub } from 'react-icons/fa';
 
 const FeaturedInnovator = ({ innovator }) => {
   return (

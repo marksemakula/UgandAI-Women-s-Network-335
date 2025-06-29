@@ -1,8 +1,9 @@
 // Projects.jsx - Updated version
-import { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
+
 import ProjectGallery from '../components/ProjectGallery';
 
 const STORAGE_KEYS = {

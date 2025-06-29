@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useEvents } from '@context/EventContext';
 import PropTypes from 'prop-types';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   FiUsers, 
   FiBook, 
@@ -12,7 +12,7 @@ import {
   FiHome,
   FiRefreshCw
 } from 'react-icons/fi';
-import { useEvents } from '@context/EventContext';
+import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export default function Dashboard() {

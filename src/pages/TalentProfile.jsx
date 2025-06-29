@@ -1,7 +1,7 @@
-import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiLinkedin, FiMail, FiPhone, FiGlobe } from 'react-icons/fi';
 import PropTypes from 'prop-types';
+import { FiLinkedin, FiMail, FiPhone, FiGlobe } from 'react-icons/fi';
+import { useParams } from 'react-router-dom';
 
 export default function TalentProfile() {
   const { username } = useParams();

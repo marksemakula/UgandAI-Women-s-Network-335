@@ -6,12 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --fix",
-    "typecheck": "tsc --noEmit",
-    "prebuild": "npm run lint && npm run typecheck",
+    "lint": "eslint . --ext .js,.jsx --fix",
+    "prebuild": "npm run lint",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "clean": "rimraf node_modules dist",
+    "reset": "npm run clean && npm install"
   },
   "dependencies": {
     "@questlabs/react-sdk": "^2.1.1",
@@ -29,24 +30,15 @@
     "zustand": "^4.5.1"
   },
   "devDependencies": {
-    "@eslint/config-array": "^0.20.1",
-    "@eslint/js": "^8.57.1",
-    "@eslint/object-schema": "^2.1.6",
-    "@types/node": "^20.11.0",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
-    "@typescript-eslint/eslint-plugin": "^7.5.0",
-    "@typescript-eslint/parser": "^7.18.0",
+    "@eslint/js": "^9.30.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9.29.0",
+    "eslint": "^9.30.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
-    "glob": "^11.0.3",
     "globals": "^15.15.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.0",
@@ -54,17 +46,32 @@
     "prettier": "^3.2.5",
     "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.3.3",
-    "vite": "^6.3.5",
-    "vite-plugin-checker": "^0.6.4"
+    "vite": "^6.3.5"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "*.{js,jsx}": [
       "eslint --fix",
       "prettier --write"
     ],
     "*.{css,scss,json,md,html}": [
       "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   }
 }

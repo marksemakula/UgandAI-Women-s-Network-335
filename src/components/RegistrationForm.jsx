@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { FiUser, FiMail, FiPhone, FiBook, FiBriefcase } from 'react-icons/fi';
 
 const formFields = [

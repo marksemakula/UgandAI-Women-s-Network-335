@@ -1,7 +1,7 @@
 // ProjectCard.jsx
 import { motion } from 'framer-motion';
-import { FiGithub, FiExternalLink, FiUser, FiFile } from 'react-icons/fi';
 import PropTypes from 'prop-types';
+import { FiGithub, FiExternalLink, FiUser, FiFile } from 'react-icons/fi';
 
 export default function ProjectCard({ project }) {
   const { title, creator, image, description, tags, links, status, category } = project;

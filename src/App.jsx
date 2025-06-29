@@ -1,22 +1,32 @@
+import PropTypes from 'prop-types';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import PropTypes from 'prop-types';
+
+// Components
 import Navbar from './components/Navbar';
+
+// Pages - Public
+import ContentEditor from './pages/admin/ContentEditor';
+import Dashboard from './pages/admin/Dashboard';
+import DashboardHome from './pages/admin/DashboardHome';
+import Login from './pages/admin/Login';
+import TalentPoolManager from './pages/admin/TalentPoolManager';
 import Home from './pages/Home';
+import Innovators from './pages/Innovators';
 import Membership from './pages/Membership';
 import Mentor from './pages/Mentor';
 import Projects from './pages/Projects';
-import Innovators from './pages/Innovators';
 import TalentPool from './pages/TalentPool';
 import TalentProfile from './pages/TalentProfile';
-import Dashboard from './pages/admin/Dashboard';
-import ContentEditor from './pages/admin/ContentEditor';
-import TalentPoolManager from './pages/admin/TalentPoolManager';
-import Login from './pages/admin/Login';
-import DashboardHome from './pages/admin/DashboardHome';
 
-// Protected Route Component
+// Pages - Admin
+
+/**
+ * Protected Route Component
+ * Wraps admin routes to ensure authentication
+ */
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem('uwiai_admin_token');
   return isAuthenticated ? children : <Navigate to="/admin/login" replace />;
@@ -26,11 +36,16 @@ ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired
 };
 
+/**
+ * Main Application Component
+ * Handles routing and layout for the entire application
+ */
 export default function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar />
+        
         <main className="flex-grow">
           <Routes>
             {/* Public Routes */}
@@ -75,7 +90,7 @@ export default function App() {
               } 
             />
 
-            {/* Optional: 404 catch-all for public routes */}
+            {/* 404 catch-all for public routes */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
@@ -100,8 +115,13 @@ export default function App() {
   );
 }
 
-// Add prop types for ContentEditor routes
+// Prop type definitions
 ContentEditor.propTypes = {
-  type: PropTypes.oneOf(['projects', 'events', 'content']),
+  type: PropTypes.oneOf(['projects', 'events', 'content']).isRequired,
   mode: PropTypes.oneOf(['list', 'create', 'edit'])
+};
+
+// Default props
+ContentEditor.defaultProps = {
+  mode: 'list'
 };

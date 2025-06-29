@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+
 import TalentPoolForm from '../components/TalentPoolForm';
 
 export default function TalentPool() {

@@ -1,7 +1,8 @@
 // ProjectGallery.jsx
-import { useState } from 'react';
-import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+
 import ProjectCard from './ProjectCard';
 
 export default function ProjectGallery({ projects }) {

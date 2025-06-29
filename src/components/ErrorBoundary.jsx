@@ -1,5 +1,5 @@
-import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Component } from 'react';
 
 export class ErrorBoundary extends Component {
   state = { hasError: false, error: null };

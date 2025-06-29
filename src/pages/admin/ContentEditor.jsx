@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   FiSave, 
   FiTrash2, 
@@ -17,7 +16,9 @@ import {
   FiFileText,
   FiRefreshCw
 } from 'react-icons/fi';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+
 import { useEvents } from '../../context/EventContext';
 
 export default function ContentEditor({ type = 'projects', mode = 'list' }) {

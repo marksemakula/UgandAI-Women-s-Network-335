@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 import { FiMapPin, FiClock, FiExternalLink } from 'react-icons/fi';
 import { toast } from 'react-toastify';
-import PropTypes from 'prop-types';
 
 export default function EventCard({ event }) {
   const { 

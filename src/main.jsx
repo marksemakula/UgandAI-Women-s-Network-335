@@ -1,7 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+
 import App from './App';
 import { EventProvider } from './context/EventContext';
+
 import './index.css';
 import { toast } from 'react-toastify';
 

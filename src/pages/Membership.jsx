@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
+
 import RegistrationForm from '../components/RegistrationForm';
 
 export default function Membership() {

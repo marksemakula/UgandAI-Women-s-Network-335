@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
+import { useState, useMemo } from 'react';
 import { FiFilter } from 'react-icons/fi';
+
 import EventCard from './EventCard';
 
 const eventTypes = [
