@@ -94,7 +94,7 @@ export default function Footer() {
 
       {/* Bottom Banner */}
       <div className="bg-primary py-4 text-center text-white">
-        <p className="text-sm">&#169; UWIAI</p>
+        <p>{'\u00A9'} 2025 UWIAI. All rights reserved.</p>
       </div>
     </footer>
   );
