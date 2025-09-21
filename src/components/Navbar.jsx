@@ -1,4 +1,4 @@
-// Updated to use UWIAI branding
+// Updated to use UWIAI branding with logo
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { FiMenu, FiX } from 'react-icons/fi';
@@ -23,6 +23,12 @@ export default function Navbar() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link to="/" className="flex-shrink-0 flex items-center">
+                {/* Logo added here */}
+                <img 
+                  src="/images/UWAI_Logo1.png" 
+                  alt="UWIAI Logo" 
+                  className="h-8 w-auto mr-2" 
+                />
                 <h1 className="text-2xl font-display font-bold text-primary">UWIAI</h1>
               </Link>
             </div>

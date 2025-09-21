@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Components
 import Navbar from './components/Navbar';
+import Footer from './components/Footer'; // Add Footer import
 
 // Pages - Public
 import ContentEditor from './pages/admin/ContentEditor';
@@ -94,6 +95,9 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+
+        {/* Footer Component */}
+        <Footer />
 
         {/* Toast Notification Container */}
         <ToastContainer
