@@ -3,10 +3,10 @@ import { FiFacebook, FiTwitter, FiInstagram, FiLinkedin, FiMail, FiPhone, FiMapP
 
 export default function Footer() {
   const socialLinks = [
-    { icon: FiFacebook, url: 'https://facebook.com/uwiai', label: 'Facebook' },
-    { icon: FiTwitter, url: 'https://twitter.com/uwiai', label: 'Twitter' },
-    { icon: FiInstagram, url: 'https://instagram.com/uwiai', label: 'Instagram' },
-    { icon: FiLinkedin, url: 'https://linkedin.com/company/uwiai', label: 'LinkedIn' }
+    { icon: FiFacebook, url: 'https://facebook.com/', label: 'Facebook' },
+    { icon: FiTwitter, url: 'https://twitter.com/', label: 'Twitter' },
+    { icon: FiInstagram, url: 'https://instagram.com/', label: 'Instagram' },
+    { icon: FiLinkedin, url: 'https://linkedin.com/company/', label: 'LinkedIn' }
   ];
 
   return (
