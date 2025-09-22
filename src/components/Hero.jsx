@@ -1,71 +1,87 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const LogoShuffle = () => {
   const [currentLogo, setCurrentLogo] = useState(0);
   const [direction, setDirection] = useState('right');
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const imageRefs = useRef([]);
 
   const logos = [
     {
       src: "/images/SHE+IS+AI-Logo-white-trans+(500+x+140+px).png",
       alt: "SHE+IS+AI Logo",
-      className: "h-16 w-auto" // Maintain aspect ratio for wide logo
+      className: "h-20 w-auto" // Slightly larger for better balance
     },
     {
       src: "/images/UWAI_Logo.png",
       alt: "UWIAI Logo",
-      className: "h-32 w-auto" // Different sizing for square logo
+      className: "h-48 w-auto" // Doubled from h-24 to h-48
     }
   ];
+
+  // Preload images to prevent lag
+  useEffect(() => {
+    const loadImages = async () => {
+      const loadPromises = logos.map((logo) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = logo.src;
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      });
+
+      await Promise.all(loadPromises);
+      setImagesLoaded(true);
+    };
+
+    loadImages();
+  }, []);
 
   // Directions for entrance animation
   const directions = ['top', 'right', 'bottom', 'left'];
   
-  // Variants for animation
+  // Optimized variants for smoother animation
   const logoVariants = {
     hidden: (direction) => {
       switch(direction) {
         case 'top':
-          return { y: -200, opacity: 0, scale: 0.8 };
+          return { y: -150, opacity: 0 };
         case 'right':
-          return { x: 200, opacity: 0, scale: 0.8 };
+          return { x: 150, opacity: 0 };
         case 'bottom':
-          return { y: 200, opacity: 0, scale: 0.8 };
+          return { y: 150, opacity: 0 };
         case 'left':
-          return { x: -200, opacity: 0, scale: 0.8 };
+          return { x: -150, opacity: 0 };
         default:
-          return { x: 200, opacity: 0, scale: 0.8 };
+          return { x: 150, opacity: 0 };
       }
     },
     visible: {
       x: 0,
       y: 0,
       opacity: 1,
-      scale: 1,
       transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 15,
-        mass: 0.5
+        type: "tween",
+        ease: "easeOut",
+        duration: 0.6
       }
     },
-    exit: (direction) => {
-      switch(direction) {
-        case 'top':
-          return { y: -200, opacity: 0, scale: 0.8, transition: { duration: 0.5 } };
-        case 'right':
-          return { x: 200, opacity: 0, scale: 0.8, transition: { duration: 0.5 } };
-        case 'bottom':
-          return { y: 200, opacity: 0, scale: 0.8, transition: { duration: 0.5 } };
-        case 'left':
-          return { x: -200, opacity: 0, scale: 0.8, transition: { duration: 0.5 } };
-        default:
-          return { x: 200, opacity: 0, scale: 0.8, transition: { duration: 0.5 } };
+    exit: {
+      opacity: 0,
+      scale: 0.9,
+      transition: {
+        type: "tween",
+        ease: "easeIn",
+        duration: 0.5
       }
     }
   };
 
   useEffect(() => {
+    if (!imagesLoaded) return;
+    
     const interval = setInterval(() => {
       // Choose a random direction for the next logo
       const randomDirection = directions[Math.floor(Math.random() * directions.length)];
@@ -73,14 +89,23 @@ const LogoShuffle = () => {
       
       // Switch to the next logo
       setCurrentLogo((prev) => (prev + 1) % logos.length);
-    }, 2000); // Change logo every 2 seconds
+    }, 2500); // Slightly longer interval for smoother transitions
 
     return () => clearInterval(interval);
-  }, []);
+  }, [imagesLoaded]);
+
+  // Show loading state until images are ready
+  if (!imagesLoaded) {
+    return (
+      <div className="relative h-80 w-80 mx-auto lg:mx-0 lg:ml-auto flex items-center justify-center">
+        <div className="h-32 w-32 bg-primary-light rounded-lg animate-pulse"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative h-72 w-72 mx-auto lg:mx-0 lg:ml-auto flex items-center justify-center">
-      <AnimatePresence mode="wait" custom={direction}>
+    <div className="relative h-80 w-80 mx-auto lg:mx-0 lg:ml-auto flex items-center justify-center">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={currentLogo}
           custom={direction}
@@ -96,6 +121,7 @@ const LogoShuffle = () => {
             alt={logos[currentLogo].alt} 
             className={logos[currentLogo].className}
             style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+            ref={el => imageRefs.current[currentLogo] = el}
           />
         </motion.div>
       </AnimatePresence>
