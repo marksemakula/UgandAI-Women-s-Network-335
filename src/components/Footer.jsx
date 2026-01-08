@@ -1,18 +1,26 @@
 import { motion } from 'framer-motion';
-import { FiFacebook, FiTwitter, FiInstagram, FiLinkedin, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
+import { FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
+import { SiX, SiSlack, SiDiscord, SiTiktok, SiLinkedin, SiFacebook, SiWhatsapp, SiTelegram, SiSignal } from 'react-icons/si';
+import { FaBitbucket } from 'react-icons/fa';
 
 export default function Footer() {
   const socialLinks = [
-    { icon: FiFacebook, url: 'https://facebook.com/', label: 'Facebook' },
-    { icon: FiTwitter, url: 'https://twitter.com/', label: 'Twitter' },
-    { icon: FiInstagram, url: 'https://instagram.com/', label: 'Instagram' },
-    { icon: FiLinkedin, url: 'https://linkedin.com/company/', label: 'LinkedIn' }
+    { icon: SiX, url: 'https://x.com/', label: 'X (Twitter)' },
+    { icon: SiLinkedin, url: 'https://linkedin.com/company/', label: 'LinkedIn' },
+    { icon: SiFacebook, url: 'https://facebook.com/', label: 'Facebook' },
+    { icon: SiSlack, url: 'https://slack.com/', label: 'Slack' },
+    { icon: SiDiscord, url: 'https://discord.com/', label: 'Discord' },
+    { icon: SiTiktok, url: 'https://tiktok.com/', label: 'TikTok' },
+    { icon: SiWhatsapp, url: 'https://wa.me/', label: 'WhatsApp' },
+    { icon: SiTelegram, url: 'https://t.me/', label: 'Telegram' },
+    { icon: SiSignal, url: 'https://signal.org/', label: 'Signal' },
+    { icon: FaBitbucket, url: 'https://bitbucket.org/', label: 'Bitchat' }
   ];
 
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
         {/* Logo at the top center - Significantly larger */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -65,17 +73,17 @@ export default function Footer() {
           className="flex flex-col items-center mb-8"
         >
           <h3 className="text-lg font-semibold text-primary mb-4">Follow Us</h3>
-          <div className="flex space-x-4">
+          <div className="flex flex-wrap justify-center gap-4">
             {socialLinks.map((social, index) => (
               <a
                 key={index}
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 bg-white rounded-full shadow-sm hover:bg-accent hover:text-white transition"
+                className="text-gray-600 hover:text-accent transition"
                 aria-label={social.label}
               >
-                <social.icon size={20} />
+                <social.icon size={24} />
               </a>
             ))}
           </div>
@@ -86,7 +94,7 @@ export default function Footer() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center text-gray-500 max-w-2xl mx-auto mb-8"
+          className="text-center text-gray-500 max-w-2xl mx-auto mb-4"
         >
           <p>Empowering Ugandan women to lead and innovate in the field of Artificial Intelligence through education, mentorship, and community building.</p>
         </motion.div>
