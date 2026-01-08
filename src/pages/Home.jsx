@@ -5,6 +5,7 @@ import { useMemo, useEffect, useCallback } from 'react';
 import EventsCalendar from '../components/EventsCalendar';
 import FeatureStory from '../components/FeatureStory';
 import Hero from '../components/Hero';
+import SEO from '../components/SEO';
 import { useEvents } from '../context/EventContext';
 import { useEventSync } from '../hooks/useEventSync';
 
@@ -99,6 +100,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <SEO 
+        title="Home"
+        description="Empowering Ugandan women to lead and innovate in the field of Artificial Intelligence through education, mentorship, and community building. Join our AI community today."
+        keywords="Ugandan women, AI, Artificial Intelligence, women in tech, Uganda, mentorship, education, innovation, STEM"
+        url="https://www.uwiai.org/"
+      />
+      
       {/* Hero Section */}
       <Hero />
       

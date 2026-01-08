@@ -1,20 +1,29 @@
 {
   "name": "Ugandan Women in AI",
   "short_name": "UWIAI",
-  "description": "Empowering Ugandan women in Artificial Intelligence",
+  "description": "Empowering Ugandan women to lead and innovate in the field of Artificial Intelligence through education, mentorship, and community building.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#2C3E50",
+  "background_color": "#ffffff",
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "theme_color": "#2C3E50",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "categories": ["education", "technology", "community"],
+  "screenshots": []
 }

@@ -2,10 +2,17 @@ import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 import RegistrationForm from '../components/RegistrationForm';
+import SEO from '../components/SEO';
 
 export default function Membership() {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
+      <SEO 
+        title="Membership"
+        description="Join the Ugandan Women in AI community. Register for exclusive access to mentorship programs, workshops, networking events, and AI learning resources."
+        keywords="join UWIAI, AI community membership, women in tech community, AI mentorship Uganda"
+        url="https://www.uwiai.org/membership"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <motion.h1 

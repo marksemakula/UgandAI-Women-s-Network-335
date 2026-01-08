@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 
 import FeaturedInnovator from '../components/FeaturedInnovator';
 import InnovatorSpotlight from '../components/InnovatorSpotlight';
+import SEO from '../components/SEO';
 
 const innovators = [
   // Featured Innovators (will appear in single rows)
@@ -177,6 +178,12 @@ export default function Innovators() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-16">
+      <SEO 
+        title="Innovators"
+        description="Meet the inspiring Ugandan women leading innovation in Artificial Intelligence. Discover their stories, achievements, and contributions to AI research and development."
+        keywords="Ugandan women innovators, AI researchers, women in STEM, African AI leaders, tech pioneers"
+        url="https://www.uwiai.org/innovators"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}

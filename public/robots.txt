@@ -1,0 +1,14 @@
+# robots.txt for Ugandan Women in AI
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.uwiai.org/sitemap.xml
+
+# Disallow admin pages from being crawled
+Disallow: /admin/
+Disallow: /admin/*
+
+# Crawl-delay
+Crawl-delay: 1

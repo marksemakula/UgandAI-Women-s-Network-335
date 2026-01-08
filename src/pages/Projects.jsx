@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import ProjectGallery from '../components/ProjectGallery';
+import SEO from '../components/SEO';
 
 const STORAGE_KEYS = {
   PROJECTS: 'uwiai_projects',
@@ -115,6 +116,12 @@ export default function Projects() {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gray-50"
     >
+      <SEO 
+        title="Projects"
+        description="Explore AI projects and research initiatives by Ugandan women in Artificial Intelligence. From healthcare to education, see how AI is making an impact."
+        keywords="AI projects Uganda, women AI research, machine learning projects, African AI innovation"
+        url="https://www.uwiai.org/projects"
+      />
       <div className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {isLoading && (
