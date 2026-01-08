@@ -17,8 +17,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Montserrat', 'sans-serif']
+        sans: ['Ubuntu', 'sans-serif'],
+        display: ['Ubuntu', 'sans-serif']
       }
     }
   },
