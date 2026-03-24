@@ -5,8 +5,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Components
-import Navbar from './components/Navbar';
+import Breadcrumb from './components/Breadcrumb'; // Add Breadcrumb import
 import Footer from './components/Footer'; // Add Footer import
+import Navbar from './components/Navbar';
 
 // Pages - Public
 import ContentEditor from './pages/admin/ContentEditor';
@@ -46,6 +47,7 @@ export default function App() {
     <Router>
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar />
+        <Breadcrumb />
         
         <main className="flex-grow">
           <Routes>

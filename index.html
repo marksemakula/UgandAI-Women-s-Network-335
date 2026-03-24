@@ -44,7 +44,7 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://www.uwiai.org/" />
     
-    <!-- Structured Data / JSON-LD -->
+    <!-- Structured Data / JSON-LD - Organization -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -77,8 +77,86 @@
       ]
     }
     </script>
+
+    <!-- Structured Data / JSON-LD - WebSite with SitelinksSearchBox -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Ugandan Women in AI",
+      "alternateName": "UWIAI",
+      "url": "https://www.uwiai.org",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.uwiai.org/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Structured Data / JSON-LD - SiteNavigationElement for Sitelinks -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Home",
+          "description": "Welcome to Ugandan Women in AI - Empowering women in artificial intelligence",
+          "url": "https://www.uwiai.org/"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Projects",
+          "description": "Explore AI projects created by Ugandan women innovators",
+          "url": "https://www.uwiai.org/projects"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Innovators",
+          "description": "Meet the talented women leading AI innovation in Uganda",
+          "url": "https://www.uwiai.org/innovators"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Mentor",
+          "description": "Connect with experienced AI mentors and grow your skills",
+          "url": "https://www.uwiai.org/mentor"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Talent Pool",
+          "description": "Discover skilled AI professionals ready for opportunities",
+          "url": "https://www.uwiai.org/talent-pool"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Join Us",
+          "description": "Become a member of the Ugandan Women in AI community",
+          "url": "https://www.uwiai.org/membership"
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
+    <!-- Noscript Navigation Fallback for Search Engines -->
+    <noscript>
+      <nav aria-label="Main navigation">
+        <ul>
+          <li><a href="/" title="Home - Ugandan Women in AI">Home</a></li>
+          <li><a href="/projects" title="Projects - AI Projects by Ugandan Women">Projects</a></li>
+          <li><a href="/innovators" title="Innovators - Women Leading AI in Uganda">Innovators</a></li>
+          <li><a href="/mentor" title="Mentor - AI Mentorship Program">Mentor</a></li>
+          <li><a href="/talent-pool" title="Talent Pool - AI Professionals Directory">Talent Pool</a></li>
+          <li><a href="/membership" title="Join Us - Become a UWIAI Member">Join Us</a></li>
+        </ul>
+      </nav>
+    </noscript>
+    
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -8,12 +8,12 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { to: '/', text: 'Home' },
-    { to: '/projects', text: 'Projects' },
-    { to: '/innovators', text: 'Innovators' },
-    { to: '/mentor', text: 'Mentor' },
-    { to: '/talent-pool', text: 'Talent Pool' },
-    { to: '/membership', text: 'Join Us', highlight: true }
+    { to: '/', text: 'Home', title: 'Home - Ugandan Women in AI' },
+    { to: '/projects', text: 'Projects', title: 'AI Projects by Ugandan Women Innovators' },
+    { to: '/innovators', text: 'Innovators', title: 'Meet Women Leading AI Innovation in Uganda' },
+    { to: '/mentor', text: 'Mentor', title: 'AI Mentorship Program - Connect with Experienced Mentors' },
+    { to: '/talent-pool', text: 'Talent Pool', title: 'AI Professionals Directory - Find Skilled Talent' },
+    { to: '/membership', text: 'Join Us', title: 'Become a Member of UWIAI Community', highlight: true }
   ];
 
   return (
@@ -38,6 +38,7 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
+                  title={link.title}
                   className={`${
                     link.highlight
                       ? 'bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-light'
@@ -71,6 +72,7 @@ export default function Navbar() {
                 <Link
                   key={link.to}
                   to={link.to}
+                  title={link.title}
                   className={`block px-3 py-2 rounded-md ${
                     link.highlight
                       ? 'bg-accent text-white'

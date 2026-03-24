@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
+import { FaBitbucket } from 'react-icons/fa';
 import { FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 import { SiX, SiSlack, SiDiscord, SiTiktok, SiLinkedin, SiFacebook, SiWhatsapp, SiTelegram, SiSignal } from 'react-icons/si';
-import { FaBitbucket } from 'react-icons/fa';
 
 export default function Footer() {
   const socialLinks = [
