@@ -52,4 +52,12 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Talent Profile Page -->
+  <url>
+    <loc>https://www.uwiai.org/talent/sarah-nakato</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>

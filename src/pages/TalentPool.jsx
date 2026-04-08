@@ -1,10 +1,18 @@
 import { motion } from 'framer-motion';
 
+import SEO from '../components/SEO';
 import TalentPoolForm from '../components/TalentPoolForm';
 
 export default function TalentPool() {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
+      <SEO
+        title="Talent Pool"
+        description="Join the UWIAI talent pool to showcase your AI skills, connect with employers, and discover new opportunities across Uganda and beyond."
+        keywords="AI talent pool Uganda, women in AI jobs, machine learning talent, UWIAI talent"
+        url="https://www.uwiai.org/talent-pool"
+        pageType="CollectionPage"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <motion.h1 

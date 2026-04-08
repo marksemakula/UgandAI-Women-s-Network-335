@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { FiLinkedin, FiMail, FiPhone, FiGlobe } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
+import SEO from '../components/SEO';
+
 export default function TalentProfile() {
   const { username } = useParams();
   // In a real app, this would fetch from API based on username
@@ -29,6 +31,13 @@ export default function TalentProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
+      <SEO
+        title={`${profile.name} | Talent Profile`}
+        description={`${profile.name} - ${profile.title}. Explore expertise, featured projects, and contact details on the UWIAI Talent Pool.`}
+        keywords="AI talent profile, women in AI Uganda, machine learning experts, UWIAI talent"
+        url={`https://www.uwiai.org/talent/${username || 'profile'}`}
+        pageType="ProfilePage"
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}

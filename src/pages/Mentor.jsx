@@ -1,10 +1,18 @@
 import React from 'react';
 
 import MentorshipForm from '../components/MentorshipForm';
+import SEO from '../components/SEO';
 
 const Mentor = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
+      <SEO
+        title="Mentorship Program"
+        description="Join the UWIAI mentorship program to connect with experienced AI professionals, receive 1-on-1 guidance, and grow your AI career in Uganda."
+        keywords="AI mentorship Uganda, women in AI mentorship, mentor program, UWIAI mentor"
+        url="https://www.uwiai.org/mentor"
+        pageType="CollectionPage"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Mentorship Program</h1>
